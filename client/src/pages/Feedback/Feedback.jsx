@@ -1,0 +1,7 @@
+import { useState } from 'react';
+import './feedback.css';
+
+export default function Feedback() {
+  const [sent, setSent] = useState(false);
+  return <main className="container feedback-page"><div className="page-intro centered"><p className="eyebrow">LẮNG NGHE ĐỂ HOÀN THIỆN HƠN</p><h1>Góp ý trải nghiệm Đường Sách</h1><p>Ý kiến của bạn giúp chúng tôi nâng cao chất lượng phục vụ và gìn giữ văn hóa đọc.</p></div><div className="feedback-layout"><aside><div className="feedback-aside-card"><h2>Dùng chung toàn Đường Sách</h2><p>Góp ý trải nghiệm chung tại Đường Sách.</p></div><div className="qr-placeholder">QR</div></aside><form className="feedback-form" onSubmit={(event) => { event.preventDefault(); setSent(true); }}><label>Địa điểm bạn muốn góp ý<select required><option value="">Chọn địa điểm</option><option>Toàn Đường Sách</option><option>Gian hàng A</option></select></label><fieldset><legend>Mức độ hài lòng của bạn</legend><div className="rating-row">{[1, 2, 3, 4, 5].map((score) => <label key={score}><input type="radio" name="rating" required value={score} /><span>{score}</span></label>)}</div></fieldset><label>Nội dung góp ý chi tiết<textarea required placeholder="Hãy chia sẻ điều bạn hài lòng hoặc điều cần cải thiện..." /></label><label>Thông tin liên hệ <input placeholder="Email hoặc số điện thoại (không bắt buộc)" /></label><button className="primary full">Gửi góp ý trải nghiệm</button>{sent && <p className="success">✓ Gửi ý kiến đóng góp thành công. Cảm ơn bạn rất nhiều!</p>}</form></div></main>;
+}
