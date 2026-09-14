@@ -1,0 +1,5 @@
+import './map.css';
+
+export default function MapPage() {
+  return <main className="container map-page"><div className="page-intro"><p className="eyebrow">KHÁM PHÁ KHÔNG GIAN</p><h1>Bản đồ Đường Sách</h1><p>Tìm gian hàng, tiện ích và các điểm di sản trong hành trình của bạn.</p></div><div className="map-layout"><aside className="map-filter"><div className="map-tabs"><button className="selected">Book Street Quận 1</button><button>Book Street Thủ Đức</button></div><h3>Lọc loại điểm</h3>{['Gian hàng sách', 'Tiện ích & Dịch vụ', 'Không gian di sản', 'Lối đi bộ'].map((item) => <label key={item}><input type="checkbox" defaultChecked />{item}</label>)}</aside><div className="map-canvas"><div className="map-road"><span>Fahasa</span><span className="selected-point">Nhà Nam (Đang chọn)</span><span>NXB Trẻ</span><span>Sân khấu Văn hóa</span></div><div className="map-pin">➤ &nbsp; LỐI ĐI BỘ CHÍNH - THỦ THIÊM</div><div className="map-place"><h2>Nhà Nam Thủ Quán</h2><b>Gian hàng sách thứ 12</b><p>Không gian đọc và cà phê sách ngoài trời thoải mái.</p><button className="primary">Xem chi tiết</button></div></div></div></main>;
+}
