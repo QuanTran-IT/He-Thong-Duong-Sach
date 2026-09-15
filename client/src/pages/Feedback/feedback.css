@@ -1,1 +1,7 @@
-.feedback-page .feedback-form{min-width:0}.feedback-page .feedback-form textarea{resize:vertical}
+.feedback-page .feedback-form {
+    min-width: 0
+}
+
+.feedback-page .feedback-form textarea {
+    resize: vertical
+}
