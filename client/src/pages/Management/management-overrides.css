@@ -249,6 +249,8 @@
     align-items: flex-start;
     flex-wrap: wrap;
     padding: 12px;
+    width: 100%;
+    box-sizing: border-box;
   }
   .management-brand {
     width: 100%;
@@ -259,6 +261,16 @@
   .management-nav {
     order: 3;
     flex-basis: 100%;
+    width: 100%;
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 8px;
+    gap: 8px;
+  }
+  .management-nav button {
+    flex: 0 0 auto;
   }
   .sidebar-bottom {
     order: 4;

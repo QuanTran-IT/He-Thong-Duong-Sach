@@ -75,7 +75,7 @@
     display: grid;
     grid-template-columns: 68px minmax(0, 1fr) auto;
     gap: 16px;
-    min-height: 202px;
+    min-height: 140px;
     padding: 20px;
     border: 1px solid var(--line);
     border-radius: 10px;
