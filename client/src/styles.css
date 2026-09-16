@@ -1,73 +1,85 @@
  .footer {
-     display: grid !important;
-     grid-template-columns: minmax(0, 1fr) 220px !important;
-     align-items: start !important;
-     gap: 12px 50px !important;
-     min-height: 230px !important;
+     display: flex !important;
+     flex-wrap: wrap !important;
+     justify-content: space-between !important;
+     gap: 32px !important;
      padding: 42px max(24px, calc((100% - 1120px)/2)) 20px !important;
      background: #1d4154 !important
  }
 
- .footer strong {
-     grid-column: 1;
+ .footer-brand {
+     max-width: 360px;
+ }
+
+ .footer-brand strong {
+     display: block;
      color: #fff !important;
      font: 700 22px 'Cormorant Garamond', serif !important
  }
 
- .footer span {
-     grid-column: 1;
-     max-width: 360px;
-     margin-top: 4px;
+ .footer-brand span {
+     display: block;
+     margin-top: 8px;
      color: #bdd0d6 !important;
-     font-size: 10px !important;
+     font-size: 11px !important;
      line-height: 1.55
  }
 
- .footer::before {
-     grid-column: 2;
-     grid-row: 1 / span 2;
-     white-space: pre-line;
-     color: #e8eef0;
-     font-size: 10px;
-     line-height: 2;
-     content: 'Khám phá\A Trang chủ\A Sự kiện\A Bản đồ\A Di sản\A\A Hỗ trợ\A Góp ý\A Liên hệ\A Hướng dẫn'
+ .footer-links {
+     display: flex;
+     gap: 60px;
  }
 
- .footer small {
-     grid-column: 1 / -1;
-     align-self: end;
-     margin: 28px 0 0;
-     padding-top: 14px;
+ .footer-links div {
+     display: flex;
+     flex-direction: column;
+     gap: 12px;
+ }
+
+ .footer-links b {
+     color: #e8eef0;
+     font-size: 12px;
+     margin-bottom: 4px;
+ }
+
+ .footer-links button {
+     color: #bdd0d6;
+     background: transparent;
+     border: none;
+     font-size: 11px;
+     text-align: left;
+     cursor: pointer;
+ }
+ 
+ .footer-links button:hover {
+     color: #fff;
+ }
+
+ .footer > small {
+     width: 100%;
+     margin: 20px 0 0;
+     padding-top: 16px;
      border-top: 1px solid rgb(219 232 235 / 25%);
      color: #a9c0c7 !important;
-     font-size: 8px !important
+     font-size: 10px !important;
+     display: flex;
+     justify-content: space-between;
  }
-
- .footer::after {
-     position: absolute;
-     right: max(24px, calc((100% - 1120px)/2));
-     bottom: 16px;
-     color: #d36b42;
-     font-size: 9px;
-     content: 'Theo dõi chúng tôi   Facebook   Instagram'
+ 
+ .footer > em {
+     display: none; /* hidden because we can place it next to small */
  }
 
  @media(max-width:720px) {
      .footer {
-         grid-template-columns: 1fr !important;
-         min-height: 300px !important;
-         padding: 34px 20px 20px !important
+         flex-direction: column !important;
+         padding: 34px 20px 20px !important;
+         gap: 24px !important;
      }
 
-     .footer::before {
-         grid-column: 1;
-         grid-row: auto;
-         margin-top: 14px
-     }
-
-     .footer::after {
-         left: 20px;
-         right: auto
+     .footer-links {
+         flex-direction: column;
+         gap: 30px;
      }
  }
 
