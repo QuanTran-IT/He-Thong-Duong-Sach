@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Management from '../../client/src/pages/Management/Management.jsx';
+import ErrorBoundary from './ErrorBoundary.jsx';
 import '../../client/src/styles/global.css';
 import './login.css';
 
@@ -42,5 +43,9 @@ export default function AdminApp() {
     );
   }
 
-  return <Management navigate={navigate} />;
-}
+  return (
+    <ErrorBoundary>
+      <Management navigate={navigate} />
+    </ErrorBoundary>
+  );
+}
