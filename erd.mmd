@@ -1,0 +1,11 @@
+erDiagram
+    AUTHOR ||--|{ BOOK "1 author : writes many books"
+    PUBLISHER ||--|{ BOOK "1 publisher : publishes many books"
+    CATEGORY ||--|{ BOOK "1 category : contains many books"
+    CUSTOMER ||--|{ ORDERS "1 customer : places many orders"
+    ORDERS ||--o{ ORDER_DETAIL "1 order : has many details"
+    BOOK ||--|{ ORDER_DETAIL "1 book : has many order details"
+    ORDERS ||--o{ PAYMENTS "1 order : has 1 payment"
+    CUSTOMER ||--|{ COMMENTS "1 customer : writes many comments"
+    BOOK ||--|{ COMMENTS "1 book : receives many comments"
+    CART ||--o{ ORDER_DETAIL "1 cart : contains many details"
