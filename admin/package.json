@@ -8,8 +8,6 @@
     "build": "vite build"
   },
   "dependencies": {
-    "jsdom": "^30.0.1",
-    "puppeteer": "^25.11.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
   },
