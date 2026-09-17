@@ -1,3 +1,5 @@
+.mobile-management-nav { display: none; }
+
 .management-dashboard {
   display: block;
   min-height: calc(100vh - 64px);
@@ -43,33 +45,52 @@
 .sidebar-label {
   display: none;
 }
-.management-nav {
+.desktop-management-nav {
   display: flex;
   min-width: 0;
   flex: 1;
   flex-direction: row;
-  justify-content: space-evenly;
+  justify-content: flex-start;
   gap: 4px;
   overflow: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  padding: 0 16px;
 }
-.management-nav button {
+.desktop-management-nav::-webkit-scrollbar {
+  display: none;
+}
+.desktop-management-nav button {
   display: flex;
+  align-items: center;
   min-width: max-content;
   grid-template-columns: none;
   gap: 6px;
   padding: 9px 10px;
-  color: var(--muted);
+  color: #687b85;
   background: transparent;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 13px;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
 }
-.management-nav button:hover,
-.management-nav button.active {
+.desktop-management-nav button svg {
+  width: 18px;
+  height: 18px;
+}
+.desktop-management-nav button:hover,
+.desktop-management-nav button.active {
   border-color: #e7cabb;
   color: var(--coral);
   background: #fff4ed;
 }
-.management-nav button b {
+.desktop-management-nav button b {
   color: #fff;
   background: var(--coral);
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
 }
 .sidebar-bottom {
   position: static;
@@ -251,6 +272,11 @@
     padding: 12px;
     width: 100%;
     box-sizing: border-box;
+    backdrop-filter: none;
+    transform: none;
+  }
+  .desktop-management-nav {
+    display: none !important;
   }
   .management-brand {
     width: 100%;
@@ -258,19 +284,50 @@
   .new-proposal {
     order: 0;
   }
-  .management-nav {
-    order: 3;
-    flex-basis: 100%;
-    width: 100%;
+  .mobile-management-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
     display: flex;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    overflow-y: hidden;
-    padding-bottom: 8px;
-    gap: 8px;
+    flex-direction: row;
+    justify-content: space-around;
+    padding: 8px 6px calc(8px + env(safe-area-inset-bottom));
+    background: #fffdf9;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.06);
+    z-index: 1000;
+    border-top: 1px solid #eadfd5;
+    margin: 0;
   }
-  .management-nav button {
-    flex: 0 0 auto;
+  .mobile-management-nav button {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    background: transparent !important;
+    border: none !important;
+    color: #687b85;
+    font-size: 10px;
+    padding: 4px;
+    flex: 1;
+  }
+  .mobile-management-nav button span {
+    text-align: center;
+    line-height: 1.1;
+  }
+  .mobile-management-nav button svg {
+    width: 24px;
+    height: 24px;
+  }
+  .mobile-management-nav button b {
+    position: absolute;
+    top: -2px;
+    right: 15%;
+    padding: 2px 5px;
+    font-size: 9px;
+    border: 2px solid #fffdf9;
   }
   .sidebar-bottom {
     order: 4;
@@ -285,7 +342,7 @@
     font-size: 36px;
   }
   .management-content {
-    padding: 0 12px 48px;
+    padding: 0 12px 84px;
   }
   .management-panel-grid {
     grid-template-columns: 1fr;
