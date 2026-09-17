@@ -8,7 +8,7 @@ export default function AdminApp() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   function navigate(page, id) {
-    const siteUrl = import.meta.env.VITE_PUBLIC_SITE_URL || 'https://he-thong-duong-sach.vercel.app';
+    const siteUrl = import.meta.env.DEV ? 'http://localhost:5173' : (import.meta.env.VITE_PUBLIC_SITE_URL || 'https://he-thong-duong-sach.vercel.app');
     if (page === 'home') {
       window.location.href = siteUrl;
     } else if (page === 'stall-detail') {
@@ -24,19 +24,19 @@ export default function AdminApp() {
             <span className="brand-icon">DS</span>
             <div>
               <strong>ĐIỀU HÀNH ĐƯỜNG SÁCH</strong>
-              <small>Đăng nhập hệ thống</small>
+              <small>Đăng nhập Quản trị viên</small>
             </div>
           </div>
           <form onSubmit={(e) => { e.preventDefault(); setIsAuthenticated(true); }}>
             <div className="form-group">
               <label>Tên đăng nhập</label>
-              <input type="text" placeholder="Nhập tài khoản quản trị..." required />
+              <input type="text" placeholder="Nhập tài khoản quản trị..." required defaultValue="admin" />
             </div>
             <div className="form-group">
               <label>Mật khẩu</label>
-              <input type="password" placeholder="••••••••" required />
+              <input type="password" placeholder="••••••••" required defaultValue="duongsach@2026" />
             </div>
-            <button type="submit" className="login-submit">Đăng nhập</button>
+            <button type="submit" className="login-submit">Đăng nhập Quản trị viên</button>
           </form>
           <button className="login-back" onClick={() => navigate('home')}>← Quay lại cổng bạn đọc</button>
         </div>
