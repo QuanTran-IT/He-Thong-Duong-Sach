@@ -1,0 +1,89 @@
+import { useState } from 'react';
+import { stalls } from '../../data/content.js';
+import './management.css';
+import './management-overrides.css';
+
+const proposalSeed = [
+    { id: 'SK-026', partner: 'Nhà Xuất Bản Kim Đồng', title: 'Triển lãm minh họa sách tranh thiếu nhi', date: 'Thứ 3, 08:30 - 11:30', place: 'Sân khấu B', priority: 'Thường', status: 'approved', submitted: '14/09/2026 16:20', summary: 'Trưng bày minh họa, đọc sách và hoạt động sáng tạo dành cho bạn đọc nhỏ tuổi.', equipment: ['Bàn giới thiệu x2', 'Micro không dây x1'], note: 'Đã kiểm tra lịch và thiết bị, phù hợp với không gian.' },
+    { id: 'SK-025', partner: 'Nhà Xuất Bản Trẻ', title: 'Tọa đàm "Sài Gòn - Ký ức qua từng trang sách xưa"', date: 'Thứ 5, 09:00 - 11:30', place: 'Sân khấu A', priority: 'Ưu tiên', status: 'rejected', submitted: '14/09/2026 15:05', summary: 'Buổi trò chuyện cùng nhà văn hóa và các nhà sưu tầm tư liệu cổ về thành phố.', equipment: ['Micro không dây x2', 'Bàn diễn giả x1'], note: 'Không đủ điều kiện tổ chức trong tuần này do lịch sân khấu.' },
+    { id: 'SK-024', partner: 'Hiệu sách Nhã Nam', title: 'Đêm hội sách & Đêm thơ Di sản văn hóa TP.HCM', date: 'Thứ 7, 18:30 - 21:30', place: 'Sân khấu A', priority: 'Trọng điểm', status: 'approved', submitted: '13/09/2026 10:40', summary: 'Đêm đọc thơ, giao lưu tác giả và giới thiệu các ấn phẩm về di sản thành phố.', equipment: ['Đèn sân khấu x4', 'Bàn diễn giả x2'], note: 'Đã duyệt sau khi đối chiếu lịch biểu diễn.' },
+    { id: 'SK-023', partner: 'Phương Nam Book Store', title: 'Giao lưu ký tặng: "Hồi ức Sài Gòn & Hương vị cà phê"', date: 'Thứ 7, 19:00 - 21:00', place: 'Sân khấu B', priority: 'Trọng điểm', status: 'pending', submitted: '14/09/2026 18:30', summary: 'Gặp gỡ tác giả, ký tặng và trải nghiệm không gian cà phê sách.', equipment: ['Micro không dây x2', 'Bàn ký tặng x1'], note: '' },
+    { id: 'SK-022', partner: 'Cà Phê Sách Dưới Tán Me', title: 'Workshop: Thưởng thức cà phê phin truyền thống & Đọc sách', date: 'Chủ nhật, 09:00 - 11:00', place: 'Gian hàng Cà Phê Sách', priority: 'Thường', status: 'pending', submitted: '14/09/2026 18:30', summary: 'Hướng dẫn pha chế cà phê phin mộc cho bạn đọc, kết hợp giới thiệu ấn phẩm về văn hóa thưởng trà và cà phê Sài Gòn.', equipment: ['Micro không dây x2', 'Bàn đại biểu có khăn phủ x2'], note: '' }
+];
+
+const scheduleItems = [
+    { day: 'Thứ 3', date: '15/09/2026', title: 'Giao lưu tác giả: "Sài Gòn - Ký ức qua từng trang sách xưa"', time: '09:00 - 11:30', place: 'Sân khấu A (Gần cổng Công xã Paris)', partner: 'NXB Trẻ', priority: 'Thường', color: 'blue' },
+    { day: 'Thứ 7', date: '19/09/2026', title: 'Workshop: Nghệ thuật đóng sách thủ công & Sửa chữa trang sách cũ', time: '14:30 - 17:00', place: 'Khu Không gian Trải nghiệm Sáng tạo', partner: 'Phương Nam Book Store', priority: 'Ưu tiên', color: 'gold' },
+    { day: 'Thứ 3', date: '22/09/2026', title: 'Ra mắt sách mới: "Thành phố dưới những tán cây xanh"', time: '09:30 - 11:00', place: 'Sân khấu B (Gần cổng Hai Bà Trưng)', partner: 'Hiệu sách Nhã Nam', priority: 'Thường', color: 'blue' },
+    { day: 'Thứ 3', date: '22/09/2026', title: 'Hoạt động trải nghiệm: Khám phá sách thực tế ảo AR', time: '14:30 - 17:00', place: 'Khu Trải nghiệm FPT Corner', partner: 'Phương Nam Book Store', priority: 'Thường', color: 'blue' }
+];
+
+function statusText(status) {
+    return status === 'approved' ? 'Đã duyệt' : status === 'rejected' ? 'Từ chối' : 'Chờ duyệt';
+}
+
+export default function Management({ navigate }) {
+    const [view, setView] = useState('proposals');
+    const [proposals, setProposals] = useState(proposalSeed);
+    const [selectedId, setSelectedId] = useState('SK-022');
+    const [proposalFilter, setProposalFilter] = useState('all');
+    const [eventSearch, setEventSearch] = useState('');
+    const [stallSearch, setStallSearch] = useState('');
+    const [managedStalls, setManagedStalls] = useState(stalls || []);
+    
+    const selected = proposals.find((proposal) => proposal.id === selectedId) || proposals[0];
+    const filteredProposals = proposalFilter === 'all' ? proposals : proposals.filter((proposal) => proposal.status === proposalFilter);
+    const filteredEvents = scheduleItems.filter((event) => `${event?.title} ${event?.partner} ${event?.place}`.toLowerCase().includes(eventSearch.toLowerCase()));
+    const filteredStalls = managedStalls.filter((stall) => `${stall?.name} ${stall?.type}`.toLowerCase().includes(stallSearch.toLowerCase()));
+    const pendingCount = proposals.filter((proposal) => proposal.status === 'pending').length;
+    const approvedCount = proposals.filter((proposal) => proposal.status === 'approved').length;
+
+    function decide(status) {
+        setProposals((items) => items.map((proposal) => proposal.id === selected?.id ? { ...proposal, status } : proposal));
+    }
+
+    function renderProposals() {
+        if (!selected) return null;
+        return <section className="management-panel-grid"><div className="management-list-panel"><div className="management-panel-heading"><div><h2>Hàng đợi đề xuất</h2><span>{proposals.length} hồ sơ</span></div><div className="management-filters"><button className={proposalFilter === 'all' ? 'active' : ''} onClick={() => setProposalFilter('all')}>Tất cả</button><button className={proposalFilter === 'pending' ? 'active' : ''} onClick={() => setProposalFilter('pending')}>Chờ duyệt ({pendingCount})</button><button className={proposalFilter === 'approved' ? 'active' : ''} onClick={() => setProposalFilter('approved')}>Đã duyệt</button></div></div><div className="proposal-list">{filteredProposals.map((proposal) => <button className={`proposal-card ${selected.id === proposal.id ? 'selected' : ''}`} key={proposal.id} onClick={() => setSelectedId(proposal.id)}><div className="proposal-card-top"><small>{proposal.partner}</small><span className={`priority priority-${proposal.priority === 'Ưu tiên' ? 'high' : proposal.priority === 'Trọng điểm' ? 'focus' : 'normal'}`}>{proposal.priority}</span><span className={`mini-status ${proposal.status}`}>{statusText(proposal.status)}</span></div><strong>{proposal.title}</strong><small>{proposal.date}</small><small>{proposal.place}</small></button>)}</div></div><div className="management-detail-panel"><div className="detail-meta"><span>{selected.partner}</span><small>Đã gửi: {selected.submitted}</small></div><h2>{selected.title}</h2><div className="detail-tags"><span className={`priority priority-${selected.priority === 'Ưu tiên' ? 'high' : selected.priority === 'Trọng điểm' ? 'focus' : 'normal'}`}>{selected.priority}</span><span className={`mini-status ${selected.status}`}>{statusText(selected.status)}</span></div><div className="detail-callout"><strong>Lịch trình và thiết bị hoàn toàn khả dụng</strong><p>Không phát hiện xung đột thời gian hoặc địa điểm đối với không gian đăng ký.</p></div><div className="detail-info-grid"><div><small>THỜI GIAN TỔ CHỨC</small><b>{selected.date}</b><small>DIỄN GIẢ / ĐƠN VỊ PHỐI HỢP</small><b>{selected.partner}</b></div><div><small>ĐỊA ĐIỂM ĐĂNG KÝ</small><b>{selected.place}</b><small>ĐẠI DIỆN LIÊN HỆ</small><b>Phạm Thị Lan (090 888 111)</b></div></div><div className="equipment-box"><div><small>Yêu cầu thiết bị cần cấp phát từ kho BQL:</small><span>Kho thiết bị sẵn sàng</span></div><div className="equipment-tags">{(selected.equipment || []).map((item) => <b key={item}>{item}</b>)}</div></div><div className="detail-description"><small>Mô tả tóm tắt chương trình:</small><p>{selected.summary}</p></div><label className="decision-note">Ý kiến phê duyệt / Hướng dẫn điều phối của Ban Quản lý:<textarea defaultValue={selected.note} placeholder="Nhập ghi chú xử lý..." /></label><div className="decision-actions"><button className="approve" onClick={() => decide('approved')}>Duyệt & Công bố lịch</button><button className="request" onClick={() => decide('pending')}>Yêu cầu bổ sung</button><button className="reject" onClick={() => decide('rejected')}>Từ chối</button></div></div></section>;
+    }
+
+    function renderSchedule() {
+        return <section className="management-surface"><div className="surface-heading"><div><h2>Lịch trình sự kiện tuần này</h2><p>Xem phân bổ sự kiện theo từng ngày, mức độ quan trọng và trạng thái công bố.</p></div><div className="date-strip"><select defaultValue="9" className="month-picker"><option value="1">Tháng 1</option><option value="2">Tháng 2</option><option value="3">Tháng 3</option><option value="4">Tháng 4</option><option value="5">Tháng 5</option><option value="6">Tháng 6</option><option value="7">Tháng 7</option><option value="8">Tháng 8</option><option value="9">Tháng 9</option><option value="10">Tháng 10</option><option value="11">Tháng 11</option><option value="12">Tháng 12</option></select><select defaultValue="2026" className="month-picker"><option value="2026">2026</option><option value="2027">2027</option></select></div></div><div className="schedule-grid">{(scheduleItems || []).map((event) => <article className={`schedule-card ${event.color}`} key={`${event.date}-${event.title}`}><div className="schedule-card-top"><b>{event.day} ({event.date})</b><span>{event.priority}</span></div><h3>{event.title}</h3><p>{event.time}</p><p>{event.place}</p><small>{event.partner}</small><footer><em>Đã công bố</em><button onClick={() => setView('events')}>Đối soát chi tiết</button></footer></article>)}</div></section>;
+    }
+
+    function renderEvents() {
+        return <section className="management-surface"><div className="table-toolbar"><label><input value={eventSearch} onChange={(event) => setEventSearch(event.target.value)} placeholder="Tìm kiếm sự kiện, diễn giả, địa điểm..." /></label><select defaultValue="all"><option value="all">Tất cả mức ưu tiên</option><option>Thường</option><option>Ưu tiên</option></select><button className="create-button" onClick={() => setView('proposals')}>+ Thêm sự kiện</button></div><div className="management-table"><div className="table-row table-head"><span>Thời gian</span><span>Tên sự kiện</span><span>Gian hàng / đơn vị</span><span>Địa điểm</span><span>Mức quan trọng</span><span>Trạng thái</span></div>{(filteredEvents || []).map((event) => <div className="table-row" key={`${event.date}-${event.title}`}><span><b>{event.day}</b><small>{event.date} · {event.time}</small></span><span><strong>{event.title}</strong><small>{event.partner} tổ chức hoạt động tại Đường Sách.</small></span><span><em className="table-badge">{event.partner}</em></span><span>{event.place}</span><span><em className={`priority priority-${event.priority === 'Ưu tiên' ? 'high' : 'normal'}`}>{event.priority}</em></span><span><em className="published">Đã công bố</em></span></div>)}</div></section>;
+    }
+
+    function renderStalls() {
+        return <section className="management-surface"><div className="table-toolbar"><label><input value={stallSearch} onChange={(event) => setStallSearch(event.target.value)} placeholder="Tìm gian hàng theo tên hoặc thể loại..." /></label><span className="toolbar-count">{(filteredStalls || []).length} gian hàng</span><button className="create-button" onClick={() => setView('proposals')}>+ Thêm gian hàng mới</button></div><div className="management-table stall-table"><div className="table-row table-head"><span>Mã số</span><span>Gian hàng & nhà xuất bản</span><span>Thể loại</span><span>Giờ hoạt động</span><span>Tình trạng</span><span>Hành động</span></div>{(filteredStalls || []).map((stall, index) => <div className="table-row" key={stall?.name}><span><em className="stall-code">B-{String(index + 1).padStart(2, '0')}</em></span><span><strong>{stall?.name}</strong><small>{stall?.type} · {stall?.books} đầu sách</small></span><span><em className="table-badge">{stall?.type}</em></span><span>08:00 - 22:00</span><span><em className="published">Đang mở cửa</em></span><span><button className="row-action" onClick={() => navigate('stall-detail', stall?.name)}>Xem chi tiết</button><button className="row-delete" onClick={() => setManagedStalls(items => items.filter(s => s.name !== stall?.name))} style={{color: '#d74345', background: '#fdeded', borderColor: '#fad4d4'}}>Xóa</button></span></div>)}</div></section>;
+    }
+
+    const navContent = (
+        <>
+            <button className={view === 'proposals' ? 'active' : ''} onClick={() => setView('proposals')}><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg><span>Hồ sơ cần xử lý</span></button>
+            <button className={view === 'schedule' ? 'active' : ''} onClick={() => setView('schedule')}><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"/></svg><span>Lịch vận hành</span></button>
+            <button className={view === 'events' ? 'active' : ''} onClick={() => setView('events')}><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><span>Sự kiện công bố</span></button>
+            <button className={view === 'stalls' ? 'active' : ''} onClick={() => setView('stalls')}><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M20 4H4v2h16V4zm1 10v-2l-1-5H4l-1 5v2h1v6h10v-6h4v6h2v-6h1zm-9 4H6v-4h6v4z"/></svg><span>Danh mục gian hàng</span></button>
+        </>
+    );
+
+    return (
+        <>
+            <main className="management-dashboard">
+                <aside className="management-sidebar">
+                    <div className="management-brand"><span className="brand-icon">DS</span><div><strong>ĐIỀU HÀNH ĐƯỜNG SÁCH</strong><small>Không gian văn hóa đọc</small></div></div>
+                    <nav className="desktop-management-nav">{navContent}</nav>
+                    <div className="sidebar-bottom"><button onClick={() => navigate('home')}>← Cổng bạn đọc</button></div>
+                </aside>
+                <section className="management-main">
+                    <header className="management-topbar"><div><p className="eyebrow">TRUNG TÂM VẬN HÀNH</p><h1>{view === 'proposals' ? 'Hồ sơ & điều phối' : view === 'schedule' ? 'Lịch vận hành tuần' : view === 'events' ? 'Sự kiện đang công khai' : 'Danh mục gian hàng'}</h1><p>{view === 'proposals' ? 'Kiểm tra lịch, thiết bị và nội dung trước khi đưa hoạt động lên lịch chung.' : 'Theo dõi thông tin và trạng thái hoạt động tại Đường Sách.'}</p></div><div className="management-stat-chips"><span>{pendingCount} Chờ duyệt</span><span>0 Xung đột</span><span>{approvedCount} Đã lên lịch</span><span>{(stalls || []).length} Gian hàng</span></div></header>
+                    <div className="management-content">{view === 'proposals' ? renderProposals() : view === 'schedule' ? renderSchedule() : view === 'events' ? renderEvents() : renderStalls()}</div>
+                    <footer className="management-footer"><p>© 2026 Ban Quản lý Đường Sách TP.HCM. Hệ thống điều hành nội bộ.</p></footer>
+                </section>
+            </main>
+            <nav className="mobile-management-nav">{navContent}</nav>
+        </>
+    );
+}
+
