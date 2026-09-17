@@ -8,10 +8,11 @@ export default function AdminApp() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   function navigate(page, id) {
+    const siteUrl = import.meta.env.VITE_PUBLIC_SITE_URL || 'https://he-thong-duong-sach.vercel.app';
     if (page === 'home') {
-      window.location.href = import.meta.env.VITE_PUBLIC_SITE_URL || 'http://localhost:5173';
+      window.location.href = siteUrl;
     } else if (page === 'stall-detail') {
-      window.location.href = (import.meta.env.VITE_PUBLIC_SITE_URL || 'http://localhost:5173') + `?page=stall-detail&id=${encodeURIComponent(id)}`;
+      window.location.href = siteUrl + `?page=stall-detail&id=${encodeURIComponent(id)}`;
     }
   }
 
