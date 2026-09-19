@@ -1,4 +1,5 @@
 erDiagram
+<<<<<<< HEAD
     AUTHOR ||--|{ BOOK "1 author : writes many books"
     PUBLISHER ||--|{ BOOK "1 publisher : publishes many books"
     CATEGORY ||--|{ BOOK "1 category : contains many books"
@@ -9,3 +10,194 @@ erDiagram
     CUSTOMER ||--|{ COMMENTS "1 customer : writes many comments"
     BOOK ||--|{ COMMENTS "1 book : receives many comments"
     CART ||--o{ ORDER_DETAIL "1 cart : contains many details"
+=======
+
+    %% ─── NGƯỜI DÙNG ────────────────────────────────────────────────────────────
+
+    USER {
+        string  user_id       PK   "VD: USR-001"
+        string  email              "Dùng để đăng nhập"
+        string  username
+        string  password_hash
+        string  full_name
+        string  role               "reader | partner | admin"
+        string  language_pref      "vi | en"
+        boolean is_active
+        datetime created_at
+        datetime updated_at
+    }
+
+    %% ─── GIAN HÀNG ─────────────────────────────────────────────────────────────
+
+    STALL {
+        string  stall_id      PK   "VD: GH-A"
+        string  name               "Gian hàng A"
+        string  type               "Văn học & Nghệ thuật"
+        int     book_count         "Số đầu sách đang trưng bày"
+        string  image_url
+        string  description
+        string  opening_hours      "08:00 – 22:00"
+        string  location_on_map    "Toạ độ % trên map canvas"
+        boolean is_active
+        datetime updated_at
+    }
+
+    %% ─── HỒ SƠ ĐỀ XUẤT SỰ KIỆN (RQ04, RQ05) ─────────────────────────────────
+
+    PROPOSAL {
+        string  proposal_id   PK   "VD: SK-026"
+        string  partner_name       "Nhà Xuất Bản Kim Đồng"
+        string  title
+        string  day_of_week        "Thứ 3, Thứ 7 ..."
+        string  time_slot          "08:30 – 11:30"
+        string  place              "Sân khấu A | B | ..."
+        string  priority           "Thường | Ưu tiên | Trọng điểm"
+        string  status             "pending | approved | rejected"
+        string  summary
+        string  note               "Ghi chú BQL sau khi duyệt"
+        string  decision_reason    "Lý do từ chối (bắt buộc khi rejected)"
+        string  submitted_by  FK   "→ USER.user_id"
+        string  decided_by    FK   "→ USER.user_id (BQL)"
+        datetime submitted_at
+        datetime decided_at
+    }
+
+    %% ─── THIẾT BỊ / CƠ SỞ VẬT CHẤT (RQ05) ────────────────────────────────────
+
+    EQUIPMENT {
+        string  equipment_id  PK   "VD: EQ-001"
+        string  name               "Micro không dây | Bàn diễn giả ..."
+        int     quantity_total
+        int     quantity_available
+        string  condition          "good | maintenance | damaged"
+    }
+
+    PROPOSAL_EQUIPMENT {
+        string  proposal_id   FK   "→ PROPOSAL"
+        string  equipment_id  FK   "→ EQUIPMENT"
+        int     quantity_requested
+        string  note
+    }
+
+    %% ─── SỰ KIỆN ĐÃ ĐƯỢC DUYỆT / LỊCH BIỂU (RQ03, RQ05, RQ06) ───────────────
+
+    EVENT {
+        string  event_id      PK   "VD: EVT-001"
+        string  proposal_id   FK   "→ PROPOSAL (nullable nếu tạo thẳng)"
+        string  title
+        date    event_date         "2026-09-15"
+        string  day_of_week        "Thứ 3"
+        string  time_start         "09:00"
+        string  time_end           "11:30"
+        string  place
+        string  partner_name
+        string  type               "Thiếu nhi | Tọa đàm | Cộng đồng | Biểu diễn"
+        string  priority           "Thường | Ưu tiên | Trọng điểm"
+        string  color_tag          "blue | gold | red (cho lịch màu RQ03)"
+        boolean is_published       "BQL công bố → hiện với bạn đọc"
+        datetime created_at
+    }
+
+    %% ─── ĐĂNG KÝ THAM GIA SỰ KIỆN (bạn đọc) ──────────────────────────────────
+
+    EVENT_REGISTRATION {
+        string  registration_id PK
+        string  event_id        FK  "→ EVENT"
+        string  user_id         FK  "→ USER"
+        datetime registered_at
+    }
+
+    %% ─── DI SẢN (RQ08) ─────────────────────────────────────────────────────────
+
+    HERITAGE_PLACE {
+        string  heritage_id   PK   "VD: buudien"
+        string  name               "Bưu điện Thành phố"
+        string  area               "Quận 1 | Thủ Đức ..."
+        string  number             "01 – 27"
+        string  image_url
+        string  summary
+        string  story              "Nội dung landing page"
+        boolean is_published
+        datetime updated_at
+    }
+
+    %% ─── QR CODE (RQ08, RQ09) ──────────────────────────────────────────────────
+
+    QR_CODE {
+        string  qr_id         PK
+        string  target_type        "heritage | feedback | passport_stamp"
+        string  target_id     FK   "→ HERITAGE_PLACE.heritage_id (nullable)"
+        string  url                "URL đích khi quét"
+        string  label              "Tên hiển thị kèm QR"
+        datetime created_at
+    }
+
+    %% ─── GÓP Ý (RQ09) ──────────────────────────────────────────────────────────
+
+    FEEDBACK {
+        string  feedback_id   PK   "VD: FB-01"
+        string  user_id       FK   "→ USER (nullable – khách vãng lai)"
+        string  target_type        "general | stall | heritage"
+        string  target_id          "→ STALL hoặc HERITAGE_PLACE (nullable)"
+        string  subject
+        int     rating             "1 – 5"
+        text    content
+        string  contact_info       "Email hoặc SĐT (tuỳ chọn)"
+        string  status             "pending | acknowledged | resolved"
+        string  resolved_by   FK   "→ USER.user_id (BQL)"
+        date    submitted_date
+        datetime resolved_at
+    }
+
+    %% ─── PASSPORT TRẢI NGHIỆM (RQ11) ───────────────────────────────────────────
+
+    PASSPORT {
+        string  passport_id   PK
+        string  user_id       FK   "→ USER"
+        int     total_stamps
+        datetime created_at
+    }
+
+    PASSPORT_STAMP {
+        string  stamp_id      PK
+        string  passport_id   FK   "→ PASSPORT"
+        string  heritage_id   FK   "→ HERITAGE_PLACE"
+        datetime stamped_at
+        string  note               "Phản hồi / cảm nhận khi đóng dấu"
+    }
+
+    %% ─── NHẬT KÝ HỆ THỐNG (RQ12) ───────────────────────────────────────────────
+
+    ACTIVITY_LOG {
+        int     log_id        PK
+        string  user_id       FK   "→ USER (hoặc 'system')"
+        string  action             "Admin duyệt sự kiện | Cập nhật gian hàng ..."
+        text    detail
+        string  type               "success | info | warning | neutral"
+        datetime created_at
+    }
+
+    %% ─── QUAN HỆ ────────────────────────────────────────────────────────────────
+
+    USER           ||--o{ PROPOSAL          : "partner gửi"
+    USER           ||--o{ PROPOSAL          : "admin duyệt"
+    USER           ||--o{ EVENT_REGISTRATION : "đăng ký"
+    USER           ||--o{ FEEDBACK          : "gửi góp ý"
+    USER           ||--o{ ACTIVITY_LOG      : "tạo nhật ký"
+    USER           ||--o| PASSPORT          : "sở hữu"
+
+    PROPOSAL       ||--o{ PROPOSAL_EQUIPMENT : "yêu cầu thiết bị"
+    EQUIPMENT      ||--o{ PROPOSAL_EQUIPMENT : "được yêu cầu"
+
+    PROPOSAL       ||--o| EVENT             : "dẫn đến sự kiện"
+
+    EVENT          ||--o{ EVENT_REGISTRATION : "có người đăng ký"
+
+    STALL          ||--o{ FEEDBACK          : "nhận góp ý"
+    HERITAGE_PLACE ||--o{ FEEDBACK          : "nhận góp ý"
+
+    HERITAGE_PLACE ||--o| QR_CODE           : "có QR riêng"
+
+    PASSPORT       ||--o{ PASSPORT_STAMP    : "chứa dấu"
+    HERITAGE_PLACE ||--o{ PASSPORT_STAMP    : "được đóng dấu"
+>>>>>>> origin/fix/Quan/fix-event-function-on-frontend
