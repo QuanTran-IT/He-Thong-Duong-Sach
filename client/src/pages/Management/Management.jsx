@@ -18,28 +18,85 @@ const scheduleItems = [
     { day: 'Thứ 3', date: '22/09/2026', title: 'Hoạt động trải nghiệm: Khám phá sách thực tế ảo AR', time: '14:30 - 17:00', place: 'Khu Trải nghiệm FPT Corner', partner: 'Phương Nam Book Store', priority: 'Thường', color: 'blue' }
 ];
 
+const feedbackSeed = [
+    { id: 'FB-01', name: 'Nguyễn Trần Vy', email: 'vynguyen@email.com', subject: 'Góp ý về không gian đọc sách', date: '19/09/2026', status: 'pending', content: 'Gần đây khu vực ghế đá số 3 bị hỏng, mong BQL sớm khắc phục.' },
+    { id: 'FB-02', name: 'Lê Hoàng Hải', email: 'hai.le@email.com', subject: 'Cảm ơn sự hỗ trợ', date: '18/09/2026', status: 'resolved', content: 'Tôi đã tìm lại được đồ để quên nhờ sự giúp đỡ của bảo vệ Đường Sách.' },
+    { id: 'FB-03', name: 'Trần Kim Lân', email: 'lan.tran@email.com', subject: 'Về hoạt động dịp cuối tuần', date: '17/09/2026', status: 'acknowledged', content: 'Tôi thấy âm thanh sự kiện cuối tuần qua hơi lớn, ảnh hưởng đến trải nghiệm đọc.' },
+];
+
+const logsSeed = [
+    { id: 1, time: '10:45 - 19/09/2026', action: 'Admin duyệt sự kiện', detail: 'Hồ sơ SK-024 (Đêm hội sách & Đêm thơ Di sản) đã được chuyển sang Đã duyệt.', user: 'Lê Văn Quản', type: 'success' },
+    { id: 2, time: '09:12 - 19/09/2026', action: 'Góp ý mới', detail: 'Nguyễn Trần Vy vừa gửi một góp ý mới về không gian đọc sách.', user: 'Hệ thống', type: 'info' },
+    { id: 3, time: '16:30 - 18/09/2026', action: 'Cập nhật gian hàng', detail: 'Gian hàng Phương Nam Book City vừa cập nhật giờ hoạt động.', user: 'Đối tác', type: 'warning' },
+    { id: 4, time: '08:00 - 18/09/2026', action: 'Đăng nhập', detail: 'Quản trị viên Lê Văn Quản đăng nhập vào hệ thống.', user: 'Lê Văn Quản', type: 'neutral' },
+];
+
 function statusText(status) {
     return status === 'approved' ? 'Đã duyệt' : status === 'rejected' ? 'Từ chối' : 'Chờ duyệt';
 }
 
+function feedbackStatusText(status) {
+    if (status === 'resolved') return 'Đã giải quyết';
+    if (status === 'acknowledged') return 'Đã ghi nhận';
+    return 'Chờ phản hồi';
+}
+
 export default function Management({ navigate }) {
     const [view, setView] = useState('proposals');
+    const [fabOpen, setFabOpen] = useState(false);
+    
+    // States
     const [proposals, setProposals] = useState(proposalSeed);
     const [selectedId, setSelectedId] = useState('SK-022');
     const [proposalFilter, setProposalFilter] = useState('all');
+    
     const [eventSearch, setEventSearch] = useState('');
     const [stallSearch, setStallSearch] = useState('');
-    const [managedStalls, setManagedStalls] = useState(stalls || []);
     
+    const [managedStalls, setManagedStalls] = useState(stalls || []);
+    const [feedbacks, setFeedbacks] = useState(feedbackSeed);
+    
+    // Modal states
+    const [showStallModal, setShowStallModal] = useState(false);
+    const [editingStall, setEditingStall] = useState(null);
+    const [stallForm, setStallForm] = useState({ name: '', type: 'Sách Văn Học', books: 0 });
+
     const selected = proposals.find((proposal) => proposal.id === selectedId) || proposals[0];
     const filteredProposals = proposalFilter === 'all' ? proposals : proposals.filter((proposal) => proposal.status === proposalFilter);
     const filteredEvents = scheduleItems.filter((event) => `${event?.title} ${event?.partner} ${event?.place}`.toLowerCase().includes(eventSearch.toLowerCase()));
     const filteredStalls = managedStalls.filter((stall) => `${stall?.name} ${stall?.type}`.toLowerCase().includes(stallSearch.toLowerCase()));
+    
     const pendingCount = proposals.filter((proposal) => proposal.status === 'pending').length;
     const approvedCount = proposals.filter((proposal) => proposal.status === 'approved').length;
 
     function decide(status) {
         setProposals((items) => items.map((proposal) => proposal.id === selected?.id ? { ...proposal, status } : proposal));
+    }
+
+    function handleStallSubmit(e) {
+        e.preventDefault();
+        if (editingStall) {
+            setManagedStalls(items => items.map(s => s.name === editingStall.name ? { ...stallForm } : s));
+        } else {
+            setManagedStalls([...managedStalls, { ...stallForm }]);
+        }
+        setShowStallModal(false);
+    }
+
+    function openEditModal(stall) {
+        setEditingStall(stall);
+        setStallForm({ name: stall.name, type: stall.type, books: stall.books || 0 });
+        setShowStallModal(true);
+    }
+
+    function openAddModal() {
+        setEditingStall(null);
+        setStallForm({ name: '', type: 'Sách Tổng Hợp', books: 0 });
+        setShowStallModal(true);
+    }
+
+    function changeFeedbackStatus(id, newStatus) {
+        setFeedbacks(items => items.map(fb => fb.id === id ? { ...fb, status: newStatus } : fb));
     }
 
     function renderProposals() {
@@ -56,15 +113,106 @@ export default function Management({ navigate }) {
     }
 
     function renderStalls() {
-        return <section className="management-surface"><div className="table-toolbar"><label><input value={stallSearch} onChange={(event) => setStallSearch(event.target.value)} placeholder="Tìm gian hàng theo tên hoặc thể loại..." /></label><span className="toolbar-count">{(filteredStalls || []).length} gian hàng</span><button className="create-button" onClick={() => setView('proposals')}>+ Thêm gian hàng mới</button></div><div className="management-table stall-table"><div className="table-row table-head"><span>Mã số</span><span>Gian hàng & nhà xuất bản</span><span>Thể loại</span><span>Giờ hoạt động</span><span>Tình trạng</span><span>Hành động</span></div>{(filteredStalls || []).map((stall, index) => <div className="table-row" key={stall?.name}><span><em className="stall-code">B-{String(index + 1).padStart(2, '0')}</em></span><span><strong>{stall?.name}</strong><small>{stall?.type} · {stall?.books} đầu sách</small></span><span><em className="table-badge">{stall?.type}</em></span><span>08:00 - 22:00</span><span><em className="published">Đang mở cửa</em></span><span><button className="row-action" onClick={() => navigate('stall-detail', stall?.name)}>Xem chi tiết</button><button className="row-delete" onClick={() => setManagedStalls(items => items.filter(s => s.name !== stall?.name))} style={{color: '#d74345', background: '#fdeded', borderColor: '#fad4d4'}}>Xóa</button></span></div>)}</div></section>;
+        return <section className="management-surface"><div className="table-toolbar"><label><input value={stallSearch} onChange={(event) => setStallSearch(event.target.value)} placeholder="Tìm gian hàng theo tên hoặc thể loại..." /></label><span className="toolbar-count">{(filteredStalls || []).length} gian hàng</span><button className="create-button" onClick={openAddModal}>+ Thêm gian hàng mới</button></div><div className="management-table stall-table"><div className="table-row table-head"><span>Mã số</span><span>Gian hàng & nhà xuất bản</span><span>Thể loại</span><span>Giờ hoạt động</span><span>Tình trạng</span><span>Hành động</span></div>{(filteredStalls || []).map((stall, index) => <div className="table-row" key={stall?.name}><span><em className="stall-code">B-{String(index + 1).padStart(2, '0')}</em></span><span><strong>{stall?.name}</strong><small>{stall?.type} · {stall?.books || 0} đầu sách</small></span><span><em className="table-badge">{stall?.type}</em></span><span>08:00 - 22:00</span><span><em className="published">Đang mở cửa</em></span><span><button className="row-action" onClick={() => openEditModal(stall)}>Sửa</button><button className="row-delete" onClick={() => setManagedStalls(items => items.filter(s => s.name !== stall?.name))} style={{color: '#d74345', background: '#fdeded', borderColor: '#fad4d4'}}>Xóa</button></span></div>)}</div></section>;
     }
+
+    function renderFeedbacks() {
+        return (
+            <section className="management-surface">
+                <div className="surface-heading">
+                    <div>
+                        <h2>Quản lý góp ý bạn đọc</h2>
+                        <p>Danh sách lời nhắn, đánh giá, khiếu nại từ khách hàng gửi về Ban Quản lý.</p>
+                    </div>
+                </div>
+                <div className="management-table fb-table">
+                    <div className="table-row table-head">
+                        <span>Khách hàng</span>
+                        <span>Nội dung</span>
+                        <span>Trạng thái</span>
+                        <span>Hành động</span>
+                    </div>
+                    {feedbacks.map((fb) => (
+                        <div className="table-row" key={fb.id}>
+                            <span>
+                                <strong>{fb.name}</strong>
+                                <small>{fb.email}</small>
+                                <small>{fb.date}</small>
+                            </span>
+                            <span style={{flex: 2}}>
+                                <strong>{fb.subject}</strong>
+                                <p style={{fontSize: '13px', color: '#5c7569', margin: '4px 0 0', lineHeight: 1.4}}>{fb.content}</p>
+                            </span>
+                            <span>
+                                <em className={`mini-status ${fb.status}`}>{feedbackStatusText(fb.status)}</em>
+                            </span>
+                            <span className="fb-actions" style={{gap: '8px', display: 'flex', flexDirection: 'column', alignItems: 'flex-start'}}>
+                                {fb.status === 'pending' && <button className="row-action" onClick={() => changeFeedbackStatus(fb.id, 'acknowledged')}>Đã ghi nhận</button>}
+                                {fb.status !== 'resolved' && <button className="row-action" onClick={() => changeFeedbackStatus(fb.id, 'resolved')}>Đã giải quyết</button>}
+                            </span>
+                        </div>
+                    ))}
+                </div>
+            </section>
+        );
+    }
+
+    function renderActivityLogs() {
+        return (
+            <section className="management-surface">
+                <div className="surface-heading">
+                    <div>
+                        <h2>Hoạt động hệ thống</h2>
+                        <p>Nhật ký ghi lại các thay đổi, tương tác quan trọng của toàn bộ hệ thống Đường Sách.</p>
+                    </div>
+                </div>
+                <div className="logs-timeline">
+                    {logsSeed.map((log) => (
+                        <div className={`log-item log-${log.type}`} key={log.id}>
+                            <div className="log-marker"></div>
+                            <div className="log-content">
+                                <span className="log-time">{log.time}</span>
+                                <h4>{log.action} <span className="log-user">bởi {log.user}</span></h4>
+                                <p>{log.detail}</p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </section>
+        );
+    }
+
+    function handleViewChange(newView) {
+        setView(newView);
+        setFabOpen(false);
+    }
+
+    const navItems = [
+        { key: 'proposals', label: 'Hồ sơ cần xử lý' },
+        { key: 'schedule', label: 'Lịch vận hành' },
+        { key: 'events', label: 'Sự kiện công bố' },
+        { key: 'stalls', label: 'Danh mục gian hàng' },
+        { key: 'feedbacks', label: 'Quản lý góp ý' },
+        { key: 'activity-logs', label: 'Hoạt động hệ thống' }
+    ];
+
+    const icons = {
+        proposals: <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>,
+        schedule: <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"/></svg>,
+        events: <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>,
+        stalls: <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M20 4H4v2h16V4zm1 10v-2l-1-5H4l-1 5v2h1v6h10v-6h4v6h2v-6h1zm-9 4H6v-4h6v4z"/></svg>,
+        feedbacks: <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>,
+        'activity-logs': <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+    };
 
     const navContent = (
         <>
-            <button className={view === 'proposals' ? 'active' : ''} onClick={() => setView('proposals')}><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg><span>Hồ sơ cần xử lý</span></button>
-            <button className={view === 'schedule' ? 'active' : ''} onClick={() => setView('schedule')}><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"/></svg><span>Lịch vận hành</span></button>
-            <button className={view === 'events' ? 'active' : ''} onClick={() => setView('events')}><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><span>Sự kiện công bố</span></button>
-            <button className={view === 'stalls' ? 'active' : ''} onClick={() => setView('stalls')}><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M20 4H4v2h16V4zm1 10v-2l-1-5H4l-1 5v2h1v6h10v-6h4v6h2v-6h1zm-9 4H6v-4h6v4z"/></svg><span>Danh mục gian hàng</span></button>
+            {navItems.map(item => (
+                <button key={item.key} className={view === item.key ? 'active' : ''} onClick={() => setView(item.key)}>
+                    {icons[item.key]}
+                    <span>{item.label}</span>
+                </button>
+            ))}
         </>
     );
 
@@ -73,17 +221,95 @@ export default function Management({ navigate }) {
             <main className="management-dashboard">
                 <aside className="management-sidebar">
                     <div className="management-brand"><span className="brand-icon">DS</span><div><strong>ĐIỀU HÀNH ĐƯỜNG SÁCH</strong><small>Không gian văn hóa đọc</small></div></div>
-                    <nav className="desktop-management-nav">{navContent}</nav>
+                    <nav className="desktop-management-nav management-nav">{navContent}</nav>
                     <div className="sidebar-bottom"><button onClick={() => navigate('home')}>← Cổng bạn đọc</button></div>
+                    
+                    <button
+                        className={`header-hamburger${fabOpen ? ' open' : ''}`}
+                        onClick={() => setFabOpen(o => !o)}
+                        aria-label={fabOpen ? 'Đóng menu' : 'Mở menu'}
+                        aria-expanded={fabOpen}
+                    >
+                        <span className="hbg-bar hbg-bar-1" />
+                        <span className="hbg-bar hbg-bar-2" />
+                        <span className="hbg-bar hbg-bar-3" />
+                    </button>
                 </aside>
                 <section className="management-main">
-                    <header className="management-topbar"><div><p className="eyebrow">TRUNG TÂM VẬN HÀNH</p><h1>{view === 'proposals' ? 'Hồ sơ & điều phối' : view === 'schedule' ? 'Lịch vận hành tuần' : view === 'events' ? 'Sự kiện đang công khai' : 'Danh mục gian hàng'}</h1><p>{view === 'proposals' ? 'Kiểm tra lịch, thiết bị và nội dung trước khi đưa hoạt động lên lịch chung.' : 'Theo dõi thông tin và trạng thái hoạt động tại Đường Sách.'}</p></div><div className="management-stat-chips"><span>{pendingCount} Chờ duyệt</span><span>0 Xung đột</span><span>{approvedCount} Đã lên lịch</span><span>{(stalls || []).length} Gian hàng</span></div></header>
-                    <div className="management-content">{view === 'proposals' ? renderProposals() : view === 'schedule' ? renderSchedule() : view === 'events' ? renderEvents() : renderStalls()}</div>
+                    <header className="management-topbar"><div><p className="eyebrow">TRUNG TÂM VẬN HÀNH</p><h1>{navItems.find(i => i.key === view)?.label}</h1><p>Bảng điều khiển hệ thống dành cho Ban Quản Lý.</p></div><div className="management-stat-chips"><span>{pendingCount} Chờ duyệt</span><span>0 Xung đột</span><span>{approvedCount} Đã lên lịch</span><span>{(managedStalls || []).length} Gian hàng</span></div></header>
+                    <div className="management-content">
+                        {view === 'proposals' && renderProposals()}
+                        {view === 'schedule' && renderSchedule()}
+                        {view === 'events' && renderEvents()}
+                        {view === 'stalls' && renderStalls()}
+                        {view === 'feedbacks' && renderFeedbacks()}
+                        {view === 'activity-logs' && renderActivityLogs()}
+                    </div>
                     <footer className="management-footer"><p>© 2026 Ban Quản lý Đường Sách TP.HCM. Hệ thống điều hành nội bộ.</p></footer>
                 </section>
             </main>
-            <nav className="mobile-management-nav">{navContent}</nav>
+
+            {/* Mobile Nav Menu (Client Style) */}
+            {fabOpen && (
+                <div className="mobile-nav-backdrop admin-nav-backdrop" onClick={() => setFabOpen(false)} aria-hidden="true" />
+            )}
+            <nav className={`mobile-nav-panel admin-nav-panel${fabOpen ? ' open' : ''}`} aria-label="Điều hướng quản trị">
+                <div className="mobile-nav-header">
+                    <span className="mobile-nav-brand">ĐIỀU HÀNH <em>DS</em></span>
+                    <button className="mobile-nav-close" onClick={() => setFabOpen(false)} aria-label="Đóng menu">✕</button>
+                </div>
+                <div className="mobile-nav-items">
+                    {navItems.map((item, i) => (
+                        <button
+                            key={item.key}
+                            className={`mobile-nav-item${view === item.key ? ' active' : ''}`}
+                            style={{ '--i': i }}
+                            onClick={() => handleViewChange(item.key)}
+                        >
+                            <span className="mobile-nav-icon">{icons[item.key]}</span>
+                            <span className="mobile-nav-label">{item.label}</span>
+                        </button>
+                    ))}
+                </div>
+                <div className="mobile-nav-footer">
+                    <button className="mobile-nav-login" style={{background: '#f5f0e9', color: 'var(--navy, #173f52)', border: '1px solid #eadfd5'}} onClick={() => navigate('home')}>
+                        ← Trở lại Cổng bạn đọc
+                    </button>
+                </div>
+            </nav>
+
+            {showStallModal && (
+                <div className="admin-modal-overlay">
+                    <div className="admin-modal">
+                        <h2>{editingStall ? 'Chỉnh sửa Gian hàng' : 'Thêm Gian hàng mới'}</h2>
+                        <form onSubmit={handleStallSubmit}>
+                            <div className="form-group">
+                                <label>Tên gian hàng / Nhà xuất bản</label>
+                                <input type="text" value={stallForm.name} onChange={e => setStallForm({...stallForm, name: e.target.value})} required placeholder="VD: Nhà sách Nhã Nam" />
+                            </div>
+                            <div className="form-group">
+                                <label>Thể loại / Khu vực</label>
+                                <select value={stallForm.type} onChange={e => setStallForm({...stallForm, type: e.target.value})}>
+                                    <option>Sách Văn Học</option>
+                                    <option>Sách Kinh Tế</option>
+                                    <option>Sách Thiếu Nhi</option>
+                                    <option>Sách Tổng Hợp</option>
+                                    <option>Văn Phòng Phẩm</option>
+                                    <option>Cà Phê Sách</option>
+                                </select>
+                            </div>
+                            <div className="form-group">
+                                <label>Số lượng đầu sách dự kiến</label>
+                                <input type="number" value={stallForm.books} onChange={e => setStallForm({...stallForm, books: e.target.value})} />
+                            </div>
+                            <div className="admin-modal-actions">
+                                <button type="button" className="btn-outline" onClick={() => setShowStallModal(false)}>Hủy</button>
+                                <button type="submit" className="create-button">{editingStall ? 'Lưu thay đổi' : 'Thêm gian hàng'}</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </>
     );
 }
-
