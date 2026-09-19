@@ -1,0 +1,47 @@
+.heritage-list-page,
+.article-page {
+    min-height: 400px
+}
+
+.article-back {
+    display: block;
+    width: max-content;
+    margin: 0 auto 18px max(9%, calc((100% - 620px)/2));
+    padding: 8px 13px;
+    border: 1px solid var(--coral);
+    border-radius: 7px;
+    color: var(--coral);
+    background: #fffdf9;
+    font-size: 10px;
+    font-weight: 700;
+    text-align: left;
+    box-shadow: 0 4px 12px rgb(29 65 84 / 5%)
+}
+
+.article-back:hover {
+    color: #fff;
+    background: var(--coral)
+}
+
+.article-header {
+    position: relative
+}
+
+.article-feedback-button {
+    display: block;
+    width: max-content;
+    margin: 42px max(9%, calc((100% - 620px) / 2)) 0 auto;
+    padding: 8px 13px;
+    border: 1px solid var(--coral);
+    border-radius: 7px;
+    color: var(--coral);
+    background: #fffdf9;
+    font-size: 10px;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgb(29 65 84 / 5%)
+}
+
+.article-feedback-button:hover {
+    color: #fff;
+    background: var(--coral)
+}
