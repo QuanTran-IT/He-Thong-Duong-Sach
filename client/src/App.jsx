@@ -9,6 +9,8 @@ import Feedback from './pages/Feedback/Feedback.jsx';
 import HeritageList from './pages/Heritage/HeritageList.jsx';
 import HeritageDetail from './pages/Heritage/HeritageDetail.jsx';
 import StallDetail from './pages/Stall/StallDetail.jsx';
+import Login from './pages/Login/Login.jsx';
+import Register from './pages/Login/Register.jsx';
 
 export default function App() {
     const searchParams = new URLSearchParams(window.location.search);
@@ -20,6 +22,8 @@ export default function App() {
     const [stallName, setStallName] = useState(initialPage === 'stall-detail' && initialId ? initialId : stalls[0].name);
     const [query, setQuery] = useState('');
     const [language, setLanguage] = useState('vi');
+
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     function navigate(nextPage, id) {
         setPage(nextPage);
@@ -36,6 +40,14 @@ export default function App() {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
+    // Auth pages have their own full-page layout (no header/footer)
+    if (page === 'login') {
+        return <Login navigate={navigate} onLogin={() => setIsAuthenticated(true)} />;
+    }
+    if (page === 'register') {
+        return <Register navigate={navigate} onLogin={() => setIsAuthenticated(true)} />;
+    }
+
     const place = heritagePlaces.find((item) => item.id === detailId) || heritagePlaces[0];
     const stall = stalls.find((item) => item.name === stallName) || stalls[0];
     const pageContent = {
@@ -48,5 +60,6 @@ export default function App() {
         'stall-detail': <StallDetail stall={stall} navigate={navigate} />
     }[page] || <Home navigate={navigate} query={query} setQuery={setQuery} />;
 
-    return <><Header page={page} navigate={navigate} query={query} setQuery={setQuery} language={language} toggleLanguage={() => setLanguage((current) => current === 'vi' ? 'en' : 'vi')} />{pageContent}<Footer navigate={navigate} /></>;
+    return <><Header page={page} navigate={navigate} query={query} setQuery={setQuery} language={language} toggleLanguage={() => setLanguage((current) => current === 'vi' ? 'en' : 'vi')} isAuthenticated={isAuthenticated} onLogout={() => setIsAuthenticated(false)} />{pageContent}<Footer navigate={navigate} /></>;
 }
+
