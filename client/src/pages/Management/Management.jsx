@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-import { useState } from 'react';
-=======
-import { useState, useEffect } from 'react';
->>>>>>> origin/fix/Quan/fix-event-function-on-frontend
+﻿import { useState, useEffect } from 'react';
 import { stalls } from '../../data/content.js';
 import './management.css';
 import './management-overrides.css';
@@ -48,52 +44,35 @@ function feedbackStatusText(status) {
 export default function Management({ navigate }) {
     const [view, setView] = useState('proposals');
     const [fabOpen, setFabOpen] = useState(false);
-    
-    // States
+
     const [proposals, setProposals] = useState(proposalSeed);
     const [selectedId, setSelectedId] = useState('SK-022');
     const [proposalFilter, setProposalFilter] = useState('all');
-    
+
     const [eventSearch, setEventSearch] = useState('');
     const [stallSearch, setStallSearch] = useState('');
-    
+
     const [managedStalls, setManagedStalls] = useState(stalls || []);
     const [feedbacks, setFeedbacks] = useState(feedbackSeed);
-<<<<<<< HEAD
-=======
     const [events, setEvents] = useState(scheduleItems);
->>>>>>> origin/fix/Quan/fix-event-function-on-frontend
-    
-    // Modal states
+
     const [showStallModal, setShowStallModal] = useState(false);
     const [editingStall, setEditingStall] = useState(null);
     const [stallForm, setStallForm] = useState({ name: '', type: 'Sách Văn Học', books: 0 });
-<<<<<<< HEAD
 
-    const selected = proposals.find((proposal) => proposal.id === selectedId) || proposals[0];
-    const filteredProposals = proposalFilter === 'all' ? proposals : proposals.filter((proposal) => proposal.status === proposalFilter);
-    const filteredEvents = scheduleItems.filter((event) => `${event?.title} ${event?.partner} ${event?.place}`.toLowerCase().includes(eventSearch.toLowerCase()));
-=======
-    
     const [showEventModal, setShowEventModal] = useState(false);
     const [editingEvent, setEditingEvent] = useState(null);
     const [eventForm, setEventForm] = useState({ proposalId: '', day: 'Thứ 7', date: '', time: '09:00 - 11:00', color: 'blue' });
-    
     const [decisionNote, setDecisionNote] = useState('');
 
     const selected = proposals.find((proposal) => proposal.id === selectedId) || proposals[0];
     const filteredProposals = proposalFilter === 'all' ? proposals : proposals.filter((proposal) => proposal.status === proposalFilter);
     const filteredEvents = events.filter((event) => `${event?.title} ${event?.partner} ${event?.place}`.toLowerCase().includes(eventSearch.toLowerCase()));
->>>>>>> origin/fix/Quan/fix-event-function-on-frontend
     const filteredStalls = managedStalls.filter((stall) => `${stall?.name} ${stall?.type}`.toLowerCase().includes(stallSearch.toLowerCase()));
-    
+
     const pendingCount = proposals.filter((proposal) => proposal.status === 'pending').length;
     const approvedCount = proposals.filter((proposal) => proposal.status === 'approved').length;
 
-<<<<<<< HEAD
-    function decide(status) {
-        setProposals((items) => items.map((proposal) => proposal.id === selected?.id ? { ...proposal, status } : proposal));
-=======
     useEffect(() => {
         setDecisionNote(selected?.note || '');
     }, [selected?.id]);
@@ -103,16 +82,20 @@ export default function Management({ navigate }) {
             alert('Vui lòng nhập lý do từ chối vào ô "Ý kiến phê duyệt / Hướng dẫn điều phối"!');
             return;
         }
-        setProposals((items) => items.map((proposal) => proposal.id === selected?.id ? { ...proposal, status, note: decisionNote } : proposal));
->>>>>>> origin/fix/Quan/fix-event-function-on-frontend
+
+        setProposals((items) =>
+            items.map((proposal) =>
+                proposal.id === selected?.id ? { ...proposal, status, note: decisionNote } : proposal
+            )
+        );
     }
 
     function handleStallSubmit(e) {
         e.preventDefault();
         if (editingStall) {
-            setManagedStalls(items => items.map(s => s.name === editingStall.name ? { ...stallForm } : s));
+            setManagedStalls((items) => items.map((s) => (s.name === editingStall.name ? { ...stallForm } : s)));
         } else {
-            setManagedStalls([...managedStalls, { ...stallForm }]);
+            setManagedStalls((items) => [...items, { ...stallForm }]);
         }
         setShowStallModal(false);
     }
@@ -128,9 +111,7 @@ export default function Management({ navigate }) {
         setStallForm({ name: '', type: 'Sách Tổng Hợp', books: 0 });
         setShowStallModal(true);
     }
-<<<<<<< HEAD
-=======
-    
+
     function openAddEventModal() {
         setEditingEvent(null);
         setEventForm({ proposalId: '', day: 'Thứ 7', date: '', time: '09:00 - 11:00', color: 'blue' });
@@ -139,7 +120,7 @@ export default function Management({ navigate }) {
 
     function openEditEventModal(event) {
         setEditingEvent(event);
-        const prop = proposals.find(p => p.title === event.title);
+        const prop = proposals.find((p) => p.title === event.title);
         setEventForm({
             proposalId: prop ? prop.id : '',
             day: event.day || 'Thứ 7',
@@ -152,16 +133,20 @@ export default function Management({ navigate }) {
 
     function handleEventSubmit(e) {
         e.preventDefault();
-        
+
         let baseEvent = editingEvent;
         if (eventForm.proposalId) {
-            const prop = proposals.find(p => p.id === eventForm.proposalId);
+            const prop = proposals.find((p) => p.id === eventForm.proposalId);
             if (prop) {
                 baseEvent = {
                     title: prop.title,
                     place: prop.place,
                     partner: prop.partner,
                     priority: prop.priority,
+                    day: eventForm.day,
+                    date: eventForm.date,
+                    time: eventForm.time,
+                    color: eventForm.color
                 };
             }
         }
@@ -170,7 +155,7 @@ export default function Management({ navigate }) {
             alert('Vui lòng chọn một hồ sơ đã duyệt.');
             return;
         }
-        
+
         const newEvent = {
             ...baseEvent,
             day: eventForm.day,
@@ -178,48 +163,271 @@ export default function Management({ navigate }) {
             time: eventForm.time,
             color: eventForm.color
         };
-        
+
         if (editingEvent) {
-            setEvents(events.map(ev => ev.title === editingEvent.title ? newEvent : ev));
+            setEvents((items) => items.map((ev) => (ev.title === editingEvent.title ? newEvent : ev)));
         } else {
-            setEvents([...events, newEvent]);
+            setEvents((items) => [...items, newEvent]);
         }
-        
+
         setShowEventModal(false);
     }
->>>>>>> origin/fix/Quan/fix-event-function-on-frontend
 
     function changeFeedbackStatus(id, newStatus) {
-        setFeedbacks(items => items.map(fb => fb.id === id ? { ...fb, status: newStatus } : fb));
+        setFeedbacks((items) => items.map((fb) => (fb.id === id ? { ...fb, status: newStatus } : fb)));
     }
 
     function renderProposals() {
         if (!selected) return null;
-<<<<<<< HEAD
-        return <section className="management-panel-grid"><div className="management-list-panel"><div className="management-panel-heading"><div><h2>Hàng đợi đề xuất</h2><span>{proposals.length} hồ sơ</span></div><div className="management-filters"><button className={proposalFilter === 'all' ? 'active' : ''} onClick={() => setProposalFilter('all')}>Tất cả</button><button className={proposalFilter === 'pending' ? 'active' : ''} onClick={() => setProposalFilter('pending')}>Chờ duyệt ({pendingCount})</button><button className={proposalFilter === 'approved' ? 'active' : ''} onClick={() => setProposalFilter('approved')}>Đã duyệt</button></div></div><div className="proposal-list">{filteredProposals.map((proposal) => <button className={`proposal-card ${selected.id === proposal.id ? 'selected' : ''}`} key={proposal.id} onClick={() => setSelectedId(proposal.id)}><div className="proposal-card-top"><small>{proposal.partner}</small><span className={`priority priority-${proposal.priority === 'Ưu tiên' ? 'high' : proposal.priority === 'Trọng điểm' ? 'focus' : 'normal'}`}>{proposal.priority}</span><span className={`mini-status ${proposal.status}`}>{statusText(proposal.status)}</span></div><strong>{proposal.title}</strong><small>{proposal.date}</small><small>{proposal.place}</small></button>)}</div></div><div className="management-detail-panel"><div className="detail-meta"><span>{selected.partner}</span><small>Đã gửi: {selected.submitted}</small></div><h2>{selected.title}</h2><div className="detail-tags"><span className={`priority priority-${selected.priority === 'Ưu tiên' ? 'high' : selected.priority === 'Trọng điểm' ? 'focus' : 'normal'}`}>{selected.priority}</span><span className={`mini-status ${selected.status}`}>{statusText(selected.status)}</span></div><div className="detail-callout"><strong>Lịch trình và thiết bị hoàn toàn khả dụng</strong><p>Không phát hiện xung đột thời gian hoặc địa điểm đối với không gian đăng ký.</p></div><div className="detail-info-grid"><div><small>THỜI GIAN TỔ CHỨC</small><b>{selected.date}</b><small>DIỄN GIẢ / ĐƠN VỊ PHỐI HỢP</small><b>{selected.partner}</b></div><div><small>ĐỊA ĐIỂM ĐĂNG KÝ</small><b>{selected.place}</b><small>ĐẠI DIỆN LIÊN HỆ</small><b>Phạm Thị Lan (090 888 111)</b></div></div><div className="equipment-box"><div><small>Yêu cầu thiết bị cần cấp phát từ kho BQL:</small><span>Kho thiết bị sẵn sàng</span></div><div className="equipment-tags">{(selected.equipment || []).map((item) => <b key={item}>{item}</b>)}</div></div><div className="detail-description"><small>Mô tả tóm tắt chương trình:</small><p>{selected.summary}</p></div><label className="decision-note">Ý kiến phê duyệt / Hướng dẫn điều phối của Ban Quản lý:<textarea defaultValue={selected.note} placeholder="Nhập ghi chú xử lý..." /></label><div className="decision-actions"><button className="approve" onClick={() => decide('approved')}>Duyệt & Công bố lịch</button><button className="request" onClick={() => decide('pending')}>Yêu cầu bổ sung</button><button className="reject" onClick={() => decide('rejected')}>Từ chối</button></div></div></section>;
+        return (
+            <section className="management-panel-grid">
+                <div className="management-list-panel">
+                    <div className="management-panel-heading">
+                        <div>
+                            <h2>Hàng đợi đề xuất</h2>
+                            <span>{proposals.length} hồ sơ</span>
+                        </div>
+                        <div className="management-filters">
+                            <button className={proposalFilter === 'all' ? 'active' : ''} onClick={() => setProposalFilter('all')}>Tất cả</button>
+                            <button className={proposalFilter === 'pending' ? 'active' : ''} onClick={() => setProposalFilter('pending')}>Chờ duyệt ({pendingCount})</button>
+                            <button className={proposalFilter === 'approved' ? 'active' : ''} onClick={() => setProposalFilter('approved')}>Đã duyệt</button>
+                        </div>
+                    </div>
+
+                    <div className="proposal-list">
+                        {filteredProposals.map((proposal) => (
+                            <button
+                                className={`proposal-card ${selected.id === proposal.id ? 'selected' : ''}`}
+                                key={proposal.id}
+                                onClick={() => setSelectedId(proposal.id)}
+                            >
+                                <div className="proposal-card-top">
+                                    <small>{proposal.partner}</small>
+                                    <span className={`priority priority-${proposal.priority === 'Ưu tiên' ? 'high' : proposal.priority === 'Trọng điểm' ? 'focus' : 'normal'}`}>
+                                        {proposal.priority}
+                                    </span>
+                                    <span className={`mini-status ${proposal.status}`}>{statusText(proposal.status)}</span>
+                                </div>
+                                <strong>{proposal.title}</strong>
+                                <small>{proposal.date}</small>
+                                <small>{proposal.place}</small>
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="management-detail-panel">
+                    <div className="detail-meta">
+                        <span>{selected.partner}</span>
+                        <small>Đã gửi: {selected.submitted}</small>
+                    </div>
+
+                    <h2>{selected.title}</h2>
+
+                    <div className="detail-tags">
+                        <span className={`priority priority-${selected.priority === 'Ưu tiên' ? 'high' : selected.priority === 'Trọng điểm' ? 'focus' : 'normal'}`}>
+                            {selected.priority}
+                        </span>
+                        <span className={`mini-status ${selected.status}`}>{statusText(selected.status)}</span>
+                    </div>
+
+                    <div className="detail-callout">
+                        <strong>Lịch trình và thiết bị hoàn toàn khả dụng</strong>
+                        <p>Không phát hiện xung đột thời gian hoặc địa điểm đối với không gian đăng ký.</p>
+                    </div>
+
+                    <div className="detail-info-grid">
+                        <div>
+                            <small>THỜI GIAN</small>
+                            <p>{selected.date}</p>
+                        </div>
+                        <div>
+                            <small>ĐỊA ĐIỂM</small>
+                            <p>{selected.place}</p>
+                        </div>
+                        <div>
+                            <small>ĐỐI TÁC</small>
+                            <p>{selected.partner}</p>
+                        </div>
+                        <div>
+                            <small>TỔNG THIẾT BỊ</small>
+                            <p>{selected.equipment?.join(', ') || 'Chưa cập nhật'}</p>
+                        </div>
+                    </div>
+
+                    <div className="detail-summary-box">
+                        <h3>Tóm tắt đề xuất</h3>
+                        <p>{selected.summary}</p>
+                    </div>
+
+                    <div className="decision-box">
+                        <label>Ý kiến phê duyệt / Hướng dẫn điều phối</label>
+                        <textarea
+                            value={decisionNote}
+                            onChange={(e) => setDecisionNote(e.target.value)}
+                            placeholder="Nhập ghi chú cho việc duyệt hoặc từ chối đề xuất..."
+                        />
+                        <div className="decision-actions">
+                            <button type="button" className="approve-button" onClick={() => decide('approved')}>Duyệt</button>
+                            <button type="button" className="decline-button" onClick={() => decide('rejected')}>Từ chối</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        );
     }
 
     function renderSchedule() {
-        return <section className="management-surface"><div className="surface-heading"><div><h2>Lịch trình sự kiện tuần này</h2><p>Xem phân bổ sự kiện theo từng ngày, mức độ quan trọng và trạng thái công bố.</p></div><div className="date-strip"><select defaultValue="9" className="month-picker"><option value="1">Tháng 1</option><option value="2">Tháng 2</option><option value="3">Tháng 3</option><option value="4">Tháng 4</option><option value="5">Tháng 5</option><option value="6">Tháng 6</option><option value="7">Tháng 7</option><option value="8">Tháng 8</option><option value="9">Tháng 9</option><option value="10">Tháng 10</option><option value="11">Tháng 11</option><option value="12">Tháng 12</option></select><select defaultValue="2026" className="month-picker"><option value="2026">2026</option><option value="2027">2027</option></select></div></div><div className="schedule-grid">{(scheduleItems || []).map((event) => <article className={`schedule-card ${event.color}`} key={`${event.date}-${event.title}`}><div className="schedule-card-top"><b>{event.day} ({event.date})</b><span>{event.priority}</span></div><h3>{event.title}</h3><p>{event.time}</p><p>{event.place}</p><small>{event.partner}</small><footer><em>Đã công bố</em><button onClick={() => setView('events')}>Đối soát chi tiết</button></footer></article>)}</div></section>;
+        return (
+            <section className="management-surface">
+                <div className="surface-heading">
+                    <div>
+                        <h2>Lịch trình sự kiện tuần này</h2>
+                        <p>Xem phân bổ sự kiện theo từng ngày, mức độ quan trọng và trạng thái công bố.</p>
+                    </div>
+                    <div className="date-strip">
+                        <select defaultValue="9" className="month-picker">
+                            <option value="1">Tháng 1</option>
+                            <option value="2">Tháng 2</option>
+                            <option value="3">Tháng 3</option>
+                            <option value="4">Tháng 4</option>
+                            <option value="5">Tháng 5</option>
+                            <option value="6">Tháng 6</option>
+                            <option value="7">Tháng 7</option>
+                            <option value="8">Tháng 8</option>
+                            <option value="9">Tháng 9</option>
+                            <option value="10">Tháng 10</option>
+                            <option value="11">Tháng 11</option>
+                            <option value="12">Tháng 12</option>
+                        </select>
+                        <select defaultValue="2026" className="month-picker">
+                            <option value="2026">2026</option>
+                            <option value="2027">2027</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div className="schedule-grid">
+                    {(events || []).map((event) => (
+                        <article className={`schedule-card ${event.color}`} key={`${event.date}-${event.title}`}>
+                            <div className="schedule-card-top">
+                                <b>{event.day} ({event.date})</b>
+                                <span>{event.priority}</span>
+                            </div>
+                            <h3>{event.title}</h3>
+                            <p>{event.time}</p>
+                            <p>{event.place}</p>
+                            <small>{event.partner}</small>
+                            <footer>
+                                <em>Đã công bố</em>
+                                <button onClick={() => setView('events')}>Đối soát chi tiết</button>
+                            </footer>
+                        </article>
+                    ))}
+                </div>
+            </section>
+        );
     }
 
     function renderEvents() {
-        return <section className="management-surface"><div className="table-toolbar"><label><input value={eventSearch} onChange={(event) => setEventSearch(event.target.value)} placeholder="Tìm kiếm sự kiện, diễn giả, địa điểm..." /></label><select defaultValue="all"><option value="all">Tất cả mức ưu tiên</option><option>Thường</option><option>Ưu tiên</option></select><button className="create-button" onClick={() => setView('proposals')}>+ Thêm sự kiện</button></div><div className="management-table"><div className="table-row table-head"><span>Thời gian</span><span>Tên sự kiện</span><span>Gian hàng / đơn vị</span><span>Địa điểm</span><span>Mức quan trọng</span><span>Trạng thái</span></div>{(filteredEvents || []).map((event) => <div className="table-row" key={`${event.date}-${event.title}`}><span><b>{event.day}</b><small>{event.date} · {event.time}</small></span><span><strong>{event.title}</strong><small>{event.partner} tổ chức hoạt động tại Đường Sách.</small></span><span><em className="table-badge">{event.partner}</em></span><span>{event.place}</span><span><em className={`priority priority-${event.priority === 'Ưu tiên' ? 'high' : 'normal'}`}>{event.priority}</em></span><span><em className="published">Đã công bố</em></span></div>)}</div></section>;
-=======
-        return <section className="management-panel-grid"><div className="management-list-panel"><div className="management-panel-heading"><div><h2>Hàng đợi đề xuất</h2><span>{proposals.length} hồ sơ</span></div><div className="management-filters"><button className={proposalFilter === 'all' ? 'active' : ''} onClick={() => setProposalFilter('all')}>Tất cả</button><button className={proposalFilter === 'pending' ? 'active' : ''} onClick={() => setProposalFilter('pending')}>Chờ duyệt ({pendingCount})</button><button className={proposalFilter === 'approved' ? 'active' : ''} onClick={() => setProposalFilter('approved')}>Đã duyệt</button></div></div><div className="proposal-list">{filteredProposals.map((proposal) => <button className={`proposal-card ${selected.id === proposal.id ? 'selected' : ''}`} key={proposal.id} onClick={() => setSelectedId(proposal.id)}><div className="proposal-card-top"><small>{proposal.partner}</small><span className={`priority priority-${proposal.priority === 'Ưu tiên' ? 'high' : proposal.priority === 'Trọng điểm' ? 'focus' : 'normal'}`}>{proposal.priority}</span><span className={`mini-status ${proposal.status}`}>{statusText(proposal.status)}</span></div><strong>{proposal.title}</strong><small>{proposal.date}</small><small>{proposal.place}</small></button>)}</div></div><div className="management-detail-panel"><div className="detail-meta"><span>{selected.partner}</span><small>Đã gửi: {selected.submitted}</small></div><h2>{selected.title}</h2><div className="detail-tags"><span className={`priority priority-${selected.priority === 'Ưu tiên' ? 'high' : selected.priority === 'Trọng điểm' ? 'focus' : 'normal'}`}>{selected.priority}</span><span className={`mini-status ${selected.status}`}>{statusText(selected.status)}</span></div><div className="detail-callout"><strong>Lịch trình và thiết bị hoàn toàn khả dụng</strong><p>Không phát hiện xung đột thời gian hoặc địa điểm đối với không gian đăng ký.</p></div><div className="detail-info-grid"><div><small>THỜI GIAN TỔ CHỨC</small><b>{selected.date}</b><small>DIỄN GIẢ / ĐƠN VỊ PHỐI HỢP</small><b>{selected.partner}</b></div><div><small>ĐỊA ĐIỂM ĐĂNG KÝ</small><b>{selected.place}</b><small>ĐẠI DIỆN LIÊN HỆ</small><b>Phạm Thị Lan (090 888 111)</b></div></div><div className="equipment-box"><div><small>Yêu cầu thiết bị cần cấp phát từ kho BQL:</small><span>Kho thiết bị sẵn sàng</span></div><div className="equipment-tags">{(selected.equipment || []).map((item) => <b key={item}>{item}</b>)}</div></div><div className="detail-description"><small>Mô tả tóm tắt chương trình:</small><p>{selected.summary}</p></div><label className="decision-note">Ý kiến phê duyệt / Hướng dẫn điều phối của Ban Quản lý:<textarea value={decisionNote} onChange={(e) => setDecisionNote(e.target.value)} placeholder="Nhập ghi chú xử lý (Bắt buộc nếu từ chối)..." /></label><div className="decision-actions"><button className="approve" onClick={() => decide('approved')}>Duyệt & Công bố lịch</button><button className="request" onClick={() => decide('pending')}>Yêu cầu bổ sung</button><button className="reject" onClick={() => decide('rejected')}>Từ chối</button></div></div></section>;
-    }
+        return (
+            <section className="management-surface">
+                <div className="table-toolbar">
+                    <label>
+                        <input value={eventSearch} onChange={(event) => setEventSearch(event.target.value)} placeholder="Tìm kiếm sự kiện, diễn giả, địa điểm..." />
+                    </label>
+                    <select defaultValue="all">
+                        <option value="all">Tất cả mức ưu tiên</option>
+                        <option>Thường</option>
+                        <option>Ưu tiên</option>
+                    </select>
+                    <button className="create-button" onClick={openAddEventModal}>+ Thêm sự kiện</button>
+                </div>
 
-    function renderSchedule() {
-        return <section className="management-surface"><div className="surface-heading"><div><h2>Lịch trình sự kiện tuần này</h2><p>Xem phân bổ sự kiện theo từng ngày, mức độ quan trọng và trạng thái công bố.</p></div><div className="date-strip"><select defaultValue="9" className="month-picker"><option value="1">Tháng 1</option><option value="2">Tháng 2</option><option value="3">Tháng 3</option><option value="4">Tháng 4</option><option value="5">Tháng 5</option><option value="6">Tháng 6</option><option value="7">Tháng 7</option><option value="8">Tháng 8</option><option value="9">Tháng 9</option><option value="10">Tháng 10</option><option value="11">Tháng 11</option><option value="12">Tháng 12</option></select><select defaultValue="2026" className="month-picker"><option value="2026">2026</option><option value="2027">2027</option></select></div></div><div className="schedule-grid">{(events || []).map((event) => <article className={`schedule-card ${event.color}`} key={`${event.date}-${event.title}`}><div className="schedule-card-top"><b>{event.day} ({event.date})</b><span>{event.priority}</span></div><h3>{event.title}</h3><p>{event.time}</p><p>{event.place}</p><small>{event.partner}</small><footer><em>Đã công bố</em><button onClick={() => setView('events')}>Đối soát chi tiết</button></footer></article>)}</div></section>;
-    }
+                <div className="management-table">
+                    <div className="table-row table-head">
+                        <span>Thời gian</span>
+                        <span style={{ flex: 2 }}>Tên sự kiện</span>
+                        <span>Gian hàng / đơn vị</span>
+                        <span>Địa điểm</span>
+                        <span>Trạng thái</span>
+                        <span>Hành động</span>
+                    </div>
 
-    function renderEvents() {
-        return <section className="management-surface"><div className="table-toolbar"><label><input value={eventSearch} onChange={(event) => setEventSearch(event.target.value)} placeholder="Tìm kiếm sự kiện, diễn giả, địa điểm..." /></label><select defaultValue="all"><option value="all">Tất cả mức ưu tiên</option><option>Thường</option><option>Ưu tiên</option></select><button className="create-button" onClick={openAddEventModal}>+ Thêm sự kiện</button></div><div className="management-table"><div className="table-row table-head"><span>Thời gian</span><span style={{flex: 2}}>Tên sự kiện</span><span>Gian hàng / đơn vị</span><span>Địa điểm</span><span>Trạng thái</span><span>Hành động</span></div>{(filteredEvents || []).map((event, index) => <div className="table-row" key={`${event.date}-${event.title}-${index}`}><span><b>{event.day}</b><small>{event.date} · {event.time}</small></span><span style={{flex: 2}}><strong>{event.title}</strong><small>{event.partner} tổ chức hoạt động tại Đường Sách.</small></span><span><em className="table-badge">{event.partner}</em></span><span>{event.place}</span><span><em className="published">Đã công bố</em></span><span style={{display: 'flex', gap: '8px'}}><button className="row-action" onClick={() => openEditEventModal(event)}>Sửa</button><button className="row-delete" onClick={() => setEvents(items => items.filter(e => e.title !== event.title))} style={{color: '#d74345', background: '#fdeded', borderColor: '#fad4d4'}}>Xóa</button></span></div>)}</div></section>;
->>>>>>> origin/fix/Quan/fix-event-function-on-frontend
+                    {(filteredEvents || []).map((event, index) => (
+                        <div className="table-row" key={`${event.date}-${event.title}-${index}`}>
+                            <span>
+                                <b>{event.day}</b>
+                                <small>{event.date} · {event.time}</small>
+                            </span>
+                            <span style={{ flex: 2 }}>
+                                <strong>{event.title}</strong>
+                                <small>{event.partner} tổ chức hoạt động tại Đường Sách.</small>
+                            </span>
+                            <span>
+                                <em className="table-badge">{event.partner}</em>
+                            </span>
+                            <span>{event.place}</span>
+                            <span>
+                                <em className="published">Đã công bố</em>
+                            </span>
+                            <span style={{ display: 'flex', gap: '8px' }}>
+                                <button className="row-action" onClick={() => openEditEventModal(event)}>Sửa</button>
+                                <button className="row-delete" onClick={() => setEvents((items) => items.filter((e) => e.title !== event.title))}>Xóa</button>
+                            </span>
+                        </div>
+                    ))}
+                </div>
+            </section>
+        );
     }
 
     function renderStalls() {
-        return <section className="management-surface"><div className="table-toolbar"><label><input value={stallSearch} onChange={(event) => setStallSearch(event.target.value)} placeholder="Tìm gian hàng theo tên hoặc thể loại..." /></label><span className="toolbar-count">{(filteredStalls || []).length} gian hàng</span><button className="create-button" onClick={openAddModal}>+ Thêm gian hàng mới</button></div><div className="management-table stall-table"><div className="table-row table-head"><span>Mã số</span><span>Gian hàng & nhà xuất bản</span><span>Thể loại</span><span>Giờ hoạt động</span><span>Tình trạng</span><span>Hành động</span></div>{(filteredStalls || []).map((stall, index) => <div className="table-row" key={stall?.name}><span><em className="stall-code">B-{String(index + 1).padStart(2, '0')}</em></span><span><strong>{stall?.name}</strong><small>{stall?.type} · {stall?.books || 0} đầu sách</small></span><span><em className="table-badge">{stall?.type}</em></span><span>08:00 - 22:00</span><span><em className="published">Đang mở cửa</em></span><span><button className="row-action" onClick={() => openEditModal(stall)}>Sửa</button><button className="row-delete" onClick={() => setManagedStalls(items => items.filter(s => s.name !== stall?.name))} style={{color: '#d74345', background: '#fdeded', borderColor: '#fad4d4'}}>Xóa</button></span></div>)}</div></section>;
+        return (
+            <section className="management-surface">
+                <div className="table-toolbar">
+                    <label>
+                        <input value={stallSearch} onChange={(event) => setStallSearch(event.target.value)} placeholder="Tìm gian hàng theo tên hoặc thể loại..." />
+                    </label>
+                    <span className="toolbar-count">{(filteredStalls || []).length} gian hàng</span>
+                    <button className="create-button" onClick={openAddModal}>+ Thêm gian hàng mới</button>
+                </div>
+
+                <div className="management-table stall-table">
+                    <div className="table-row table-head">
+                        <span>Mã số</span>
+                        <span>Gian hàng & nhà xuất bản</span>
+                        <span>Thể loại</span>
+                        <span>Giờ hoạt động</span>
+                        <span>Tình trạng</span>
+                        <span>Hành động</span>
+                    </div>
+
+                    {(filteredStalls || []).map((stall, index) => (
+                        <div className="table-row" key={stall?.name}>
+                            <span>
+                                <em className="stall-code">B-{String(index + 1).padStart(2, '0')}</em>
+                            </span>
+                            <span>
+                                <strong>{stall?.name}</strong>
+                                <small>{stall?.type} · {stall?.books || 0} đầu sách</small>
+                            </span>
+                            <span>
+                                <em className="table-badge">{stall?.type}</em>
+                            </span>
+                            <span>08:00 - 22:00</span>
+                            <span>
+                                <em className="published">Đang mở cửa</em>
+                            </span>
+                            <span>
+                                <button className="row-action" onClick={() => openEditModal(stall)}>Sửa</button>
+                                <button className="row-delete" onClick={() => setManagedStalls((items) => items.filter((s) => s.name !== stall?.name))}>Xóa</button>
+                            </span>
+                        </div>
+                    ))}
+                </div>
+            </section>
+        );
     }
 
     function renderFeedbacks() {
@@ -231,6 +439,7 @@ export default function Management({ navigate }) {
                         <p>Danh sách lời nhắn, đánh giá, khiếu nại từ khách hàng gửi về Ban Quản lý.</p>
                     </div>
                 </div>
+
                 <div className="management-table fb-table">
                     <div className="table-row table-head">
                         <span>Khách hàng</span>
@@ -238,6 +447,7 @@ export default function Management({ navigate }) {
                         <span>Trạng thái</span>
                         <span>Hành động</span>
                     </div>
+
                     {feedbacks.map((fb) => (
                         <div className="table-row" key={fb.id}>
                             <span>
@@ -245,14 +455,14 @@ export default function Management({ navigate }) {
                                 <small>{fb.email}</small>
                                 <small>{fb.date}</small>
                             </span>
-                            <span style={{flex: 2}}>
+                            <span style={{ flex: 2 }}>
                                 <strong>{fb.subject}</strong>
-                                <p style={{fontSize: '13px', color: '#5c7569', margin: '4px 0 0', lineHeight: 1.4}}>{fb.content}</p>
+                                <p style={{ fontSize: '13px', color: '#5c7569', margin: '4px 0 0', lineHeight: 1.4 }}>{fb.content}</p>
                             </span>
                             <span>
                                 <em className={`mini-status ${fb.status}`}>{feedbackStatusText(fb.status)}</em>
                             </span>
-                            <span className="fb-actions" style={{gap: '8px', display: 'flex', flexDirection: 'column', alignItems: 'flex-start'}}>
+                            <span className="fb-actions" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '8px' }}>
                                 {fb.status === 'pending' && <button className="row-action" onClick={() => changeFeedbackStatus(fb.id, 'acknowledged')}>Đã ghi nhận</button>}
                                 {fb.status !== 'resolved' && <button className="row-action" onClick={() => changeFeedbackStatus(fb.id, 'resolved')}>Đã giải quyết</button>}
                             </span>
@@ -272,6 +482,7 @@ export default function Management({ navigate }) {
                         <p>Nhật ký ghi lại các thay đổi, tương tác quan trọng của toàn bộ hệ thống Đường Sách.</p>
                     </div>
                 </div>
+
                 <div className="logs-timeline">
                     {logsSeed.map((log) => (
                         <div className={`log-item log-${log.type}`} key={log.id}>
@@ -313,7 +524,7 @@ export default function Management({ navigate }) {
 
     const navContent = (
         <>
-            {navItems.map(item => (
+            {navItems.map((item) => (
                 <button key={item.key} className={view === item.key ? 'active' : ''} onClick={() => setView(item.key)}>
                     {icons[item.key]}
                     <span>{item.label}</span>
@@ -326,13 +537,23 @@ export default function Management({ navigate }) {
         <>
             <main className="management-dashboard">
                 <aside className="management-sidebar">
-                    <div className="management-brand"><span className="brand-icon">DS</span><div><strong>ĐIỀU HÀNH ĐƯỜNG SÁCH</strong><small>Không gian văn hóa đọc</small></div></div>
+                    <div className="management-brand">
+                        <span className="brand-icon">DS</span>
+                        <div>
+                            <strong>ĐIỀU HÀNH ĐƯỜNG SÁCH</strong>
+                            <small>Không gian văn hóa đọc</small>
+                        </div>
+                    </div>
+
                     <nav className="desktop-management-nav management-nav">{navContent}</nav>
-                    <div className="sidebar-bottom"><button onClick={() => navigate('home')}>← Cổng bạn đọc</button></div>
-                    
+
+                    <div className="sidebar-bottom">
+                        <button onClick={() => navigate('home')}>← Cổng bạn đọc</button>
+                    </div>
+
                     <button
                         className={`header-hamburger${fabOpen ? ' open' : ''}`}
-                        onClick={() => setFabOpen(o => !o)}
+                        onClick={() => setFabOpen((o) => !o)}
                         aria-label={fabOpen ? 'Đóng menu' : 'Mở menu'}
                         aria-expanded={fabOpen}
                     >
@@ -341,8 +562,22 @@ export default function Management({ navigate }) {
                         <span className="hbg-bar hbg-bar-3" />
                     </button>
                 </aside>
+
                 <section className="management-main">
-                    <header className="management-topbar"><div><p className="eyebrow">TRUNG TÂM VẬN HÀNH</p><h1>{navItems.find(i => i.key === view)?.label}</h1><p>Bảng điều khiển hệ thống dành cho Ban Quản Lý.</p></div><div className="management-stat-chips"><span>{pendingCount} Chờ duyệt</span><span>0 Xung đột</span><span>{approvedCount} Đã lên lịch</span><span>{(managedStalls || []).length} Gian hàng</span></div></header>
+                    <header className="management-topbar">
+                        <div>
+                            <p className="eyebrow">TRUNG TÂM VẬN HÀNH</p>
+                            <h1>{navItems.find((i) => i.key === view)?.label}</h1>
+                            <p>Bảng điều khiển hệ thống dành cho Ban Quản Lý.</p>
+                        </div>
+                        <div className="management-stat-chips">
+                            <span>{pendingCount} Chờ duyệt</span>
+                            <span>0 Xung đột</span>
+                            <span>{approvedCount} Đã lên lịch</span>
+                            <span>{(managedStalls || []).length} Gian hàng</span>
+                        </div>
+                    </header>
+
                     <div className="management-content">
                         {view === 'proposals' && renderProposals()}
                         {view === 'schedule' && renderSchedule()}
@@ -351,14 +586,14 @@ export default function Management({ navigate }) {
                         {view === 'feedbacks' && renderFeedbacks()}
                         {view === 'activity-logs' && renderActivityLogs()}
                     </div>
-                    <footer className="management-footer"><p>© 2026 Ban Quản lý Đường Sách TP.HCM. Hệ thống điều hành nội bộ.</p></footer>
+
+                    <footer className="management-footer">
+                        <p>© 2026 Ban Quản lý Đường Sách TP.HCM. Hệ thống điều hành nội bộ.</p>
+                    </footer>
                 </section>
             </main>
 
-            {/* Mobile Nav Menu (Client Style) */}
-            {fabOpen && (
-                <div className="mobile-nav-backdrop admin-nav-backdrop" onClick={() => setFabOpen(false)} aria-hidden="true" />
-            )}
+            {fabOpen && <div className="mobile-nav-backdrop admin-nav-backdrop" onClick={() => setFabOpen(false)} aria-hidden="true" />}
             <nav className={`mobile-nav-panel admin-nav-panel${fabOpen ? ' open' : ''}`} aria-label="Điều hướng quản trị">
                 <div className="mobile-nav-header">
                     <span className="mobile-nav-brand">ĐIỀU HÀNH <em>DS</em></span>
@@ -378,7 +613,11 @@ export default function Management({ navigate }) {
                     ))}
                 </div>
                 <div className="mobile-nav-footer">
-                    <button className="mobile-nav-login" style={{background: '#f5f0e9', color: 'var(--navy, #173f52)', border: '1px solid #eadfd5'}} onClick={() => navigate('home')}>
+                    <button
+                        className="mobile-nav-login"
+                        style={{ background: '#f5f0e9', color: 'var(--navy, #173f52)', border: '1px solid #eadfd5' }}
+                        onClick={() => navigate('home')}
+                    >
                         ← Trở lại Cổng bạn đọc
                     </button>
                 </div>
@@ -391,11 +630,11 @@ export default function Management({ navigate }) {
                         <form onSubmit={handleStallSubmit}>
                             <div className="form-group">
                                 <label>Tên gian hàng / Nhà xuất bản</label>
-                                <input type="text" value={stallForm.name} onChange={e => setStallForm({...stallForm, name: e.target.value})} required placeholder="VD: Nhà sách Nhã Nam" />
+                                <input type="text" value={stallForm.name} onChange={(e) => setStallForm({ ...stallForm, name: e.target.value })} required placeholder="VD: Nhà sách Nhã Nam" />
                             </div>
                             <div className="form-group">
                                 <label>Thể loại / Khu vực</label>
-                                <select value={stallForm.type} onChange={e => setStallForm({...stallForm, type: e.target.value})}>
+                                <select value={stallForm.type} onChange={(e) => setStallForm({ ...stallForm, type: e.target.value })}>
                                     <option>Sách Văn Học</option>
                                     <option>Sách Kinh Tế</option>
                                     <option>Sách Thiếu Nhi</option>
@@ -406,7 +645,7 @@ export default function Management({ navigate }) {
                             </div>
                             <div className="form-group">
                                 <label>Số lượng đầu sách dự kiến</label>
-                                <input type="number" value={stallForm.books} onChange={e => setStallForm({...stallForm, books: e.target.value})} />
+                                <input type="number" value={stallForm.books} onChange={(e) => setStallForm({ ...stallForm, books: e.target.value })} />
                             </div>
                             <div className="admin-modal-actions">
                                 <button type="button" className="btn-outline" onClick={() => setShowStallModal(false)}>Hủy</button>
@@ -416,29 +655,28 @@ export default function Management({ navigate }) {
                     </div>
                 </div>
             )}
-<<<<<<< HEAD
-=======
 
             {showEventModal && (
                 <div className="admin-modal-overlay">
                     <div className="admin-modal">
                         <h2>{editingEvent ? 'Chỉnh Sửa Sự Kiện' : 'Thêm Sự Kiện Vào Lịch'}</h2>
-                        {!editingEvent && <p style={{marginBottom: '16px', color: '#556b60', fontSize: '14px'}}>Chỉ hiển thị các hồ sơ đã được duyệt để đưa vào lịch công bố.</p>}
+                        {!editingEvent && <p style={{ marginBottom: '16px', color: '#556b60', fontSize: '14px' }}>Chỉ hiển thị các hồ sơ đã được duyệt để đưa vào lịch công bố.</p>}
                         <form onSubmit={handleEventSubmit}>
                             <div className="form-group">
                                 <label>Chọn hồ sơ sự kiện</label>
-                                <select value={eventForm.proposalId} onChange={e => setEventForm({...eventForm, proposalId: e.target.value})} required={!editingEvent}>
+                                <select value={eventForm.proposalId} onChange={(e) => setEventForm({ ...eventForm, proposalId: e.target.value })} required={!editingEvent}>
                                     <option value="" disabled>-- Chọn hồ sơ đã duyệt --</option>
-                                    {proposals.filter(p => p.status === 'approved').map(p => (
+                                    {proposals.filter((p) => p.status === 'approved').map((p) => (
                                         <option key={p.id} value={p.id}>{p.id} - {p.title} ({p.partner})</option>
                                     ))}
                                 </select>
-                                {editingEvent && <small style={{display: 'block', marginTop: '6px', color: '#81968b'}}>Bỏ qua nếu chỉ muốn sửa giờ/ngày của sự kiện hiện tại.</small>}
+                                {editingEvent && <small style={{ display: 'block', marginTop: '6px', color: '#81968b' }}>Bỏ qua nếu chỉ muốn sửa giờ/ngày của sự kiện hiện tại.</small>}
                             </div>
+
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                                 <div className="form-group">
                                     <label>Ngày trong tuần</label>
-                                    <select value={eventForm.day} onChange={e => setEventForm({...eventForm, day: e.target.value})}>
+                                    <select value={eventForm.day} onChange={(e) => setEventForm({ ...eventForm, day: e.target.value })}>
                                         <option>Thứ 2</option>
                                         <option>Thứ 3</option>
                                         <option>Thứ 4</option>
@@ -450,17 +688,18 @@ export default function Management({ navigate }) {
                                 </div>
                                 <div className="form-group">
                                     <label>Ngày tháng</label>
-                                    <input type="text" value={eventForm.date} onChange={e => setEventForm({...eventForm, date: e.target.value})} placeholder="VD: 25/09/2026" required />
+                                    <input type="text" value={eventForm.date} onChange={(e) => setEventForm({ ...eventForm, date: e.target.value })} placeholder="VD: 25/09/2026" required />
                                 </div>
                             </div>
+
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                                 <div className="form-group">
                                     <label>Khung giờ</label>
-                                    <input type="text" value={eventForm.time} onChange={e => setEventForm({...eventForm, time: e.target.value})} placeholder="VD: 09:00 - 11:00" required />
+                                    <input type="text" value={eventForm.time} onChange={(e) => setEventForm({ ...eventForm, time: e.target.value })} placeholder="VD: 09:00 - 11:00" required />
                                 </div>
                                 <div className="form-group">
                                     <label>Nhãn màu hiển thị</label>
-                                    <select value={eventForm.color} onChange={e => setEventForm({...eventForm, color: e.target.value})}>
+                                    <select value={eventForm.color} onChange={(e) => setEventForm({ ...eventForm, color: e.target.value })}>
                                         <option value="blue">Xanh (Sự kiện thường)</option>
                                         <option value="gold">Vàng (Ưu tiên)</option>
                                         <option value="green">Lục (Workshop/Trải nghiệm)</option>
@@ -468,6 +707,7 @@ export default function Management({ navigate }) {
                                     </select>
                                 </div>
                             </div>
+
                             <div className="admin-modal-actions">
                                 <button type="button" className="btn-outline" onClick={() => setShowEventModal(false)}>Hủy</button>
                                 <button type="submit" className="create-button">{editingEvent ? 'Lưu thay đổi' : 'Đưa vào lịch'}</button>
@@ -476,7 +716,6 @@ export default function Management({ navigate }) {
                     </div>
                 </div>
             )}
->>>>>>> origin/fix/Quan/fix-event-function-on-frontend
         </>
     );
 }

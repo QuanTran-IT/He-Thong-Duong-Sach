@@ -12,7 +12,7 @@ export default defineConfig({
   },
   server: {
     port: 5174,
-    strictPort: true,
+    strictPort: false,
     host: true,
     proxy: { '/api': 'http://localhost:4000' }
   },

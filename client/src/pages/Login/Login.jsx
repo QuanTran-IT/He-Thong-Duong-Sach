@@ -2,13 +2,48 @@ import { useState } from 'react';
 import './login.css';
 
 export default function Login({ navigate, onLogin }) {
-    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
 
-    function handleLogin(e) {
+    async function handleLogin(e) {
         e.preventDefault();
-        if (onLogin) onLogin();
-        navigate('home');
+
+        setError('');
+
+        try {
+            const response = await fetch('http://localhost:4000/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: email,
+                    password: password
+                })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                setError(data.message || 'Đăng nhập thất bại.');
+                return;
+            }
+
+            console.log('Login successful:', data.user);
+
+            localStorage.setItem('loggedInUser', JSON.stringify(data.user));
+
+            if (onLogin) {
+                onLogin(data.user);
+            }
+
+            navigate('home');
+
+        } catch (error) {
+            console.error('Login error:', error);
+            setError('Không thể kết nối đến máy chủ.');
+        }
     }
 
     function goToAdmin() {
@@ -25,36 +60,43 @@ export default function Login({ navigate, onLogin }) {
                         <small>Cổng thông tin Độc giả</small>
                     </div>
                 </div>
-                
+
                 <form onSubmit={handleLogin}>
                     <div className="form-group">
-                        <label>Email hoặc Tên đăng nhập</label>
-                        <input 
-                            type="text" 
-                            placeholder="vi-du@duongsach.vn" 
-                            required 
-                            value={username} 
-                            onChange={e => setUsername(e.target.value)} 
+                        <label>Email</label>
+                        <input
+                            type="email"
+                            placeholder="vi-du@duongsach.vn"
+                            required
+                            value={email}
+                            onChange={e => setEmail(e.target.value)}
                         />
                     </div>
-                    
+
                     <div className="form-group">
                         <div className="auth-field-header">
                             <label>Mật khẩu</label>
                             <button type="button" className="auth-forgot">Quên mật khẩu?</button>
                         </div>
-                        <input 
-                            type="password" 
-                            placeholder="••••••••" 
-                            required 
-                            value={password} 
-                            onChange={e => setPassword(e.target.value)} 
+                        <input
+                            type="password"
+                            placeholder="••••••••"
+                            required
+                            value={password}
+                            onChange={e => setPassword(e.target.value)}
                         />
                     </div>
-                    
+
+
+                    {error && (
+                        <div className="login-error">
+                            {error}
+                        </div>
+                    )}
+
                     <button type="submit" className="login-submit">Đăng nhập</button>
                 </form>
-                
+
                 <p className="auth-register-link">
                     Chưa có tài khoản?{' '}
                     <button onClick={() => navigate('register')}>Tạo tài khoản mới</button>
