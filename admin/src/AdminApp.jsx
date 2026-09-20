@@ -84,4 +84,4 @@ export default function AdminApp() {
       <Management navigate={navigate} />
     </ErrorBoundary>
   );
-}
+}
