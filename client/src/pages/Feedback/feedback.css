@@ -1,0 +1,233 @@
+/* ===== FEEDBACK PAGE — Complete Responsive Styles ===== */
+
+/* --- Page wrapper --- */
+.feedback-page {
+    box-sizing: border-box;
+    width: 100%;
+}
+
+/* --- Intro section --- */
+.feedback-page .page-intro {
+    padding: 40px 0 24px;
+    max-width: 720px;
+}
+
+/* --- Two-column layout (desktop) --- */
+.feedback-layout {
+    display: grid;
+    grid-template-columns: 240px minmax(0, 1fr);
+    gap: 22px;
+    max-width: 900px;
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+    align-items: start;
+}
+
+/* --- Aside panel --- */
+.feedback-page aside {
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.feedback-aside-card {
+    margin-bottom: 15px;
+    padding: 20px;
+    border: 1px solid #cbd9dc;
+    border-radius: 9px;
+    background: #edf4f6;
+    box-sizing: border-box;
+}
+
+.feedback-aside-card h2 {
+    margin: 0 0 7px;
+    color: var(--navy);
+    font: 700 22px 'Cormorant Garamond', serif;
+}
+
+.feedback-aside-card p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+.qr-placeholder {
+    display: grid;
+    height: 180px;
+    place-items: center;
+    padding: 20px;
+    border: 1px solid #cbd9dc;
+    border-radius: 9px;
+    background: #edf4f6;
+    color: var(--navy);
+    font: 700 28px 'Cormorant Garamond', serif;
+    background: repeating-linear-gradient(45deg, #edf4f6 0 5px, #d7e5e8 5px 7px);
+    box-sizing: border-box;
+}
+
+/* --- Form --- */
+.feedback-form {
+    display: grid;
+    gap: 18px;
+    padding: 26px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 8px 22px rgb(35 53 62 / 7%);
+    min-width: 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.feedback-form label,
+.feedback-form legend {
+    display: block;
+    color: var(--ink);
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.feedback-form input,
+.feedback-form select,
+.feedback-form textarea {
+    width: 100%;
+    max-width: 100%;
+    margin-top: 7px;
+    padding: 11px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    outline: 0;
+    background: #fffcf8;
+    box-sizing: border-box;
+    font: inherit;
+}
+
+.feedback-form textarea {
+    min-height: 105px;
+    resize: vertical;
+}
+
+.feedback-form fieldset {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+/* --- Rating row --- */
+.rating-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 9px;
+    max-width: 100%;
+}
+
+.rating-row label {
+    margin: 0;
+    cursor: pointer;
+    flex-shrink: 0;
+    position: relative;
+}
+
+.rating-row input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    margin: 0;
+}
+
+.rating-row span {
+    display: grid;
+    width: 36px;
+    height: 36px;
+    place-items: center;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    color: var(--navy);
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.rating-row input:checked + span {
+    color: #fff;
+    border-color: var(--coral);
+    background: var(--coral);
+}
+
+.rating-row span:hover {
+    border-color: var(--coral);
+    color: var(--coral);
+}
+
+/* --- Success message --- */
+.feedback-form .success {
+    margin: 0;
+    padding: 12px;
+    border-radius: 6px;
+    color: #347541;
+    background: #edf8ef;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+/* --- Submit button --- */
+.feedback-form .primary.full {
+    width: 100%;
+    padding: 13px;
+    border: none;
+    border-radius: 8px;
+    background: var(--navy);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.feedback-form .primary.full:hover {
+    background: var(--coral);
+}
+
+/* ===== RESPONSIVE ===== */
+
+/* Tablet / small screens: switch to 1 column */
+@media (max-width: 980px) {
+    .feedback-page {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
+    .feedback-layout {
+        grid-template-columns: 1fr !important;
+        max-width: 100%;
+        gap: 16px;
+    }
+
+    .qr-placeholder {
+        display: none !important;
+    }
+
+    .feedback-form {
+        padding: 20px !important;
+    }
+}
+
+/* Mobile: tighter padding */
+@media (max-width: 600px) {
+    .feedback-page .page-intro {
+        padding: 24px 0 16px;
+    }
+
+    .feedback-form {
+        padding: 16px !important;
+    }
+
+    .feedback-aside-card {
+        padding: 16px;
+    }
+}

@@ -1,0 +1,24 @@
+{
+  "name": "duong-sach-tphcm",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "npm run dev:client",
+    "dev:client": "vite --config client/vite.config.js",
+    "dev:admin": "npm --prefix admin run dev",
+    "build": "node ./node_modules/vite/bin/vite.js build --config client/vite.config.js",
+    "build:admin": "npm --prefix admin run build"
+  },
+  "dependencies": {
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^5.0.2",
+    "vite": "^7.1.3"
+  },
+  "allowScripts": {
+    "esbuild": true
+  }
+}
