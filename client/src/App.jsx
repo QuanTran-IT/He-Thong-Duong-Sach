@@ -23,13 +23,15 @@ export default function App() {
     const [query, setQuery] = useState('');
     const [language, setLanguage] = useState('vi');
 
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState(
+        () => localStorage.getItem('loggedInUser') !== null
+    );
 
     function navigate(nextPage, id) {
         setPage(nextPage);
         if (nextPage === 'heritage-detail' && id) setDetailId(id);
         if (nextPage === 'stall-detail' && id) setStallName(id);
-        
+
         // Update URL
         const url = new URL(window.location.href);
         url.searchParams.set('page', nextPage);
@@ -42,8 +44,17 @@ export default function App() {
 
     // Auth pages have their own full-page layout (no header/footer)
     if (page === 'login') {
-        return <Login navigate={navigate} onLogin={() => setIsAuthenticated(true)} />;
+        return (
+            <Login
+                navigate={navigate}
+                onLogin={(user) => {
+                    localStorage.setItem('loggedInUser', JSON.stringify(user));
+                    setIsAuthenticated(true);
+                }}
+            />
+        );
     }
+
     if (page === 'register') {
         return <Register navigate={navigate} onLogin={() => setIsAuthenticated(true)} />;
     }
@@ -60,6 +71,28 @@ export default function App() {
         'stall-detail': <StallDetail stall={stall} navigate={navigate} />
     }[page] || <Home navigate={navigate} query={query} setQuery={setQuery} />;
 
-    return <><Header page={page} navigate={navigate} query={query} setQuery={setQuery} language={language} toggleLanguage={() => setLanguage((current) => current === 'vi' ? 'en' : 'vi')} isAuthenticated={isAuthenticated} onLogout={() => setIsAuthenticated(false)} />{pageContent}<Footer navigate={navigate} /></>;
+    return (
+        <>
+            <Header
+                page={page}
+                navigate={navigate}
+                query={query}
+                setQuery={setQuery}
+                language={language}
+                toggleLanguage={() =>
+                    setLanguage((current) => current === 'vi' ? 'en' : 'vi')
+                }
+                isAuthenticated={isAuthenticated}
+                onLogout={() => {
+                    localStorage.removeItem('loggedInUser');
+                    setIsAuthenticated(false);
+                }}
+            />
+
+            {pageContent}
+
+            <Footer navigate={navigate} />
+        </>
+    );
 }
 
