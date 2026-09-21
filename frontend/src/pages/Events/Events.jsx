@@ -71,12 +71,35 @@ export default function Events() {
                     </div>
                 </div>
             </div>
-            {visibleEvents.length ? <div className="event-card-grid">
-                {visibleEvents.map((event) => <article className="event-card" key={event.title}>
-                    <div className="event-card-date"><b>{new Date(`${event.date}T12:00:00`).getDate()}</b><span>THG {String(new Date(`${event.date}T12:00:00`).getMonth() + 1).padStart(2, '0')}</span></div>
-                    <div className="event-card-content"><span className="event-type">{event.type}</span><h3>{event.title}</h3><p className="event-date-label">{formatDate(event.date)}</p><p>{event.time} · {event.place}</p></div>
-                    <button className={`event-register ${registered.includes(event.title) ? 'registered' : ''}`} onClick={() => toggleRegistration(event.title)}>{registered.includes(event.title) ? 'Đã đăng ký' : 'Đăng ký tham gia'}</button>
-                </article>)}
+            {visibleEvents.length ? <div className="event-timeline">
+                {Array.from(new Set(visibleEvents.map(e => e.date))).sort().map(dateGroup => {
+                    const eventsInDate = visibleEvents.filter(e => e.date === dateGroup);
+                    const dObj = new Date(`${dateGroup}T12:00:00`);
+                    return (
+                        <div className="timeline-group" key={dateGroup}>
+                            <div className="timeline-date-sticky">
+                                <span className="td-day">{dObj.getDate()}</span>
+                                <span className="td-month">THG {String(dObj.getMonth() + 1).padStart(2, '0')}</span>
+                                <span className="td-weekday">{formatDate(dateGroup).split(',')[0]}</span>
+                            </div>
+                            <div className="timeline-events">
+                                {eventsInDate.map(event => (
+                                    <article className="timeline-event-card" key={event.title}>
+                                        <div className="te-time">{event.time}</div>
+                                        <div className="te-content">
+                                            <span className="event-type">{event.type}</span>
+                                            <h3>{event.title}</h3>
+                                            <p>{event.place}</p>
+                                        </div>
+                                        <button className={`event-register ${registered.includes(event.title) ? 'registered' : ''}`} onClick={() => toggleRegistration(event.title)}>
+                                            {registered.includes(event.title) ? 'Đã đăng ký' : 'Tham gia'}
+                                        </button>
+                                    </article>
+                                ))}
+                            </div>
+                        </div>
+                    );
+                })}
             </div> : <p className="events-empty">Chưa có sự kiện thuộc thời gian hoặc nhóm này.</p>}
         </section>
     </main>;
