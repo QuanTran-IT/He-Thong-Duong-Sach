@@ -1,7 +1,7 @@
 import { createElement } from 'react';
 import { renderToString } from 'react-dom/server';
 import AdminApp from './src/AdminApp.jsx';
-import Management from '../client/src/pages/Management/Management.jsx';
+import Management from '../src/pages/Management/Management.jsx';
 
 try {
     global.window = { location: { href: '' } };

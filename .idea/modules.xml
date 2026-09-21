@@ -2,7 +2,11 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+<<<<<<< HEAD
+      <module fileurl="file://$PROJECT_DIR$/.idea/WebDoAn.iml" filepath="$PROJECT_DIR$/.idea/WebDoAn.iml" />
+=======
       <module fileurl="file://$PROJECT_DIR$/.idea/He-Thong-Duong-Sach-feature.iml" filepath="$PROJECT_DIR$/.idea/He-Thong-Duong-Sach-feature.iml" />
+>>>>>>> origin/main
     </modules>
   </component>
 </project>

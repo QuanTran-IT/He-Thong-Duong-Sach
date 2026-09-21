@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import Management from '../../client/src/pages/Management/Management.jsx';
+import Management from '../../src/pages/Management/Management.jsx';
 import ErrorBoundary from './ErrorBoundary.jsx';
-import '../../client/src/styles/global.css';
+import '../../src/styles/global.css';
 import './login.css';
 
 export default function AdminApp() {
@@ -35,17 +35,17 @@ export default function AdminApp() {
             e.preventDefault();
             const username = e.target.username.value;
             const password = e.target.password.value;
-            
+
             setLoading(true);
             setError('');
-            
+
             try {
               const res = await fetch('http://localhost:4000/api/admin/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, password })
               });
-              
+
               if (res.ok) {
                 const data = await res.json();
                 setIsAuthenticated(true);

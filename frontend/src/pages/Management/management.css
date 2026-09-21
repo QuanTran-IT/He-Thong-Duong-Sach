@@ -27,7 +27,7 @@
     margin: 0 8px 24px;
 }
 
-.management-brand > span {
+.management-brand>span {
     display: grid;
     width: 34px;
     height: 34px;
@@ -131,7 +131,7 @@
     border-radius: 8px;
 }
 
-.sidebar-bottom > small {
+.sidebar-bottom>small {
     display: block;
     margin-bottom: 10px;
     color: #d4ad4a;
@@ -139,7 +139,7 @@
     font-weight: 700;
 }
 
-.sidebar-bottom > button {
+.sidebar-bottom>button {
     display: flex;
     width: 100%;
     align-items: center;
@@ -153,7 +153,7 @@
     font-weight: 700;
 }
 
-.sidebar-bottom > button:hover {
+.sidebar-bottom>button:hover {
     background: #1b3b2e;
 }
 
@@ -164,7 +164,7 @@
     margin-top: 16px;
 }
 
-.operator > span {
+.operator>span {
     display: grid;
     width: 28px;
     height: 28px;
@@ -218,7 +218,7 @@
     font: 700 26px/1.1 Manrope, sans-serif;
 }
 
-.management-topbar > div > p:last-child {
+.management-topbar>div>p:last-child {
     margin: 5px 0 0;
     color: #819189;
     font-size: 11px;
@@ -265,7 +265,7 @@
 /* --- Panels (proposals view) --- */
 .management-panel-grid {
     display: grid;
-    grid-template-columns: 320px minmax(0, 1fr);
+    grid-template-columns: 450px minmax(0, 1fr);
     gap: 16px;
     min-height: 640px;
 }
@@ -288,7 +288,7 @@
     border-bottom: 1px solid #e6ece8;
 }
 
-.management-panel-heading > div:first-child {
+.management-panel-heading>div:first-child {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -498,7 +498,7 @@
 }
 
 .detail-info-grid small,
-.detail-description > small,
+.detail-description>small,
 .equipment-box small {
     display: block;
     margin-bottom: 5px;
@@ -527,20 +527,20 @@
     background: #fffdf6;
 }
 
-.equipment-box > div:first-child {
+.equipment-box>div:first-child {
     display: flex;
     justify-content: space-between;
     gap: 15px;
 }
 
-.equipment-box > div:first-child small {
+.equipment-box>div:first-child small {
     margin: 0;
     color: #987b3f;
     text-transform: none;
     font-size: 11px;
 }
 
-.equipment-box > div:first-child span {
+.equipment-box>div:first-child span {
     color: #42906a;
     font-size: 11px;
     font-weight: 700;
@@ -904,7 +904,7 @@
     text-transform: uppercase;
 }
 
-.table-row > span {
+.table-row>span {
     min-width: 0;
 }
 
@@ -1094,7 +1094,7 @@
         padding: 12px 16px !important;
     }
 
-    .management-dashboard ~ .footer {
+    .management-dashboard~.footer {
         margin-top: 0;
     }
 
