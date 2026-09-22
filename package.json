@@ -6,11 +6,11 @@
     "dev": "npm --prefix frontend run dev",
     "dev:frontend": "npm --prefix frontend run dev:app",
     "dev:client": "npm --prefix frontend run dev:app",
-    "dev:admin": "npm --prefix frontend run dev:admin",
-    "dev:server": "npm --prefix frontend run dev:server",
+    "dev:admin": "npm --prefix admin run dev",
+    "dev:server": "npm --prefix backend run dev",
     "build": "npm --prefix frontend run build",
-    "build:admin": "npm --prefix frontend run build:admin",
+    "build:admin": "npm --prefix admin run build",
     "start": "npm --prefix frontend start",
-    "postinstall": "npm --prefix frontend install && npm --prefix frontend/admin install"
+    "postinstall": "npm --prefix frontend install && npm --prefix admin install && npm --prefix backend install"
   }
 }

@@ -4,13 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "concurrently \"npm:dev:app\" \"npm:dev:server\"",
-    "dev:app": "vite --config vite.config.js",
-    "dev:admin": "npm --prefix admin run dev",
-    "dev:server": "node --watch server/index.js",
-    "build": "vite build --config vite.config.js",
-    "build:admin": "npm --prefix admin run build",
-    "start": "node server/index.js"
+    "dev": "vite --config vite.config.js",
+    "build": "vite build --config vite.config.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
