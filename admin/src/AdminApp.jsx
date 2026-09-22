@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import Management from '../../src/pages/Management/Management.jsx';
+import Management from '../../frontend/src/pages/Management/Management.jsx';
 import ErrorBoundary from './ErrorBoundary.jsx';
-import '../../src/styles/global.css';
+import '../../frontend/src/styles/global.css';
 import './login.css';
 
 export default function AdminApp() {
