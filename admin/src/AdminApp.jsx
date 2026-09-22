@@ -5,7 +5,9 @@ import '../../frontend/src/styles/global.css';
 import './login.css';
 
 export default function AdminApp() {
-  const [isAuthenticated, setIsAuthenticated] = useState(true); // Tạm thời bypass login
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return localStorage.getItem('adminAuth') === 'true';
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -38,22 +40,15 @@ export default function AdminApp() {
             setError('');
 
             try {
-              const res = await fetch('http://localhost:4000/api/admin/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password })
-              });
-
-              if (res.ok) {
-                const data = await res.json();
+              // Sử dụng tài khoản hardcode tạm thời để test mà không cần backend
+              if (username === 'admin' && password === 'duongsach@2026') {
                 setIsAuthenticated(true);
                 localStorage.setItem('adminAuth', 'true');
               } else {
-                const errData = await res.json();
-                setError(errData.message || 'Tên đăng nhập hoặc mật khẩu không đúng');
+                setError('Tên đăng nhập hoặc mật khẩu không đúng');
               }
             } catch (err) {
-              setError('Không thể kết nối đến máy chủ');
+              setError('Đã xảy ra lỗi');
             } finally {
               setLoading(false);
             }
