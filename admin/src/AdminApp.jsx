@@ -5,9 +5,7 @@ import '../../frontend/src/styles/global.css';
 import './login.css';
 
 export default function AdminApp() {
-  const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    return localStorage.getItem('adminAuth') === 'true';
-  });
+  const [isAuthenticated, setIsAuthenticated] = useState(true); // Bypass login
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
